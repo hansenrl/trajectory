@@ -2,7 +2,11 @@
 #include <fstream>
 #include <string>
 #include <climits>
+#include <cstring>
 #include "trajData.h"
+#include "MDPoint.h"
+#include "Trajectory.h"
+
 using namespace std;
 
 int main () {
@@ -49,15 +53,15 @@ bool TrajData::readFile(string filePath)
 	m_nTrajectories = nTrajectories;
 
 	m_maxNPoints = INT_MIN;					// initialize for comparison
-/*
+
 	// the trajectory Id, the number of points, the coordinate of a point ...
 	for (int i = 0; i < nTrajectories; i++)
 	{
 		offset = 0;
 
 		istr.getline(buffer, sizeof(buffer));	// each trajectory
-		sscanf_s(buffer, "%d %d", &trajectoryId, &nPoints);
-		sscanf_s(buffer, "%s %s", tmp_buf1, sizeof(tmp_buf1), tmp_buf2, sizeof(tmp_buf2));
+		sscanf(buffer, "%d %d", &trajectoryId, &nPoints);
+		sscanf(buffer, "%s %s", tmp_buf1, tmp_buf2);
 		offset += (int)strlen(tmp_buf1) + (int)strlen(tmp_buf2) + 2;
 
 		if (nPoints > m_maxNPoints) m_maxNPoints = nPoints;
@@ -65,7 +69,7 @@ bool TrajData::readFile(string filePath)
 		nTotalPoints += nPoints;
 
 		CTrajectory* pTrajectoryItem = new CTrajectory(trajectoryId, nDimensions);
-		m_trajectoryList.AddTail(pTrajectoryItem);
+		m_trajectoryList.push_back(pTrajectoryItem);
 
 		for (int j = 0; j < nPoints; j++)
 		{
@@ -73,8 +77,8 @@ bool TrajData::readFile(string filePath)
 
 			for (int k = 0; k < nDimensions; k++)
 			{
-				sscanf_s(buffer + offset, "%f", &value);
-				sscanf_s(buffer + offset, "%s", tmp_buf1, sizeof(tmp_buf1));
+				sscanf(buffer + offset, "%f", &value);
+				sscanf(buffer + offset, "%s", tmp_buf1); // see how long the float is to advance the scan
 				offset += (int)strlen(tmp_buf1) + 1;
 
 				point.SetCoordinate(k, value);
@@ -85,6 +89,6 @@ bool TrajData::readFile(string filePath)
 	}
 
 	istr.close();
-	*/
+
 	return true;
 }

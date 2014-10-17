@@ -2,19 +2,14 @@
 //
 #pragma once
 
-#ifndef __AFXWIN_H__
-	#error "include 'stdafx.h' before including this file for PCH"
-#endif
-
-#include "resource.h"       // main symbols
-#include "param.h"			// parameters for the outlier detection algorithm (added by Jae-Gil Lee)
+#include "Param.h"			// parameters for the outlier detection algorithm (added by Jae-Gil Lee)
 
 
 // CTraOutlierApp:
 // See TraOutlier.cpp for the implementation of this class
 //
 
-class CTraOutlierApp : public CWinApp
+class CTraOutlierApp
 {
 public:
 	CTraOutlierApp();
@@ -22,11 +17,8 @@ public:
 
 // Overrides
 public:
-	virtual BOOL InitInstance();
+	virtual bool InitInstance();
 
-// Implementation
-	afx_msg void OnAppAbout();
-	DECLARE_MESSAGE_MAP()
 };
 
 extern CTraOutlierApp theApp;
