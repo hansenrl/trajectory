@@ -17,6 +17,7 @@ class TrajData
 {
 public:
 	TrajData();
+	~TrajData();
 	std::string m_inputFilePath;
 	int m_nDimensions;
 	int m_nTrajectories;
@@ -45,7 +46,6 @@ public:
 
 // Implementation
 public:
-	virtual ~TrajData();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;

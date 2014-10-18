@@ -6,12 +6,13 @@
 #include "trajData.h"
 #include "MDPoint.h"
 #include "Trajectory.h"
+#include "Param.h"
 
 using namespace std;
 
 int main () {
     // Say HelloWorld five times
-    for (int index = 0; index < 1; ++index)
+    /*for (int index = 0; index < 1; ++index)
       cout << "HelloWorld!" << endl;
     char input = 'i';
     cout << "To exit, press 'm' then the 'Enter' key." << endl;
@@ -21,8 +22,25 @@ int main () {
              << "You need to enter 'm' to exit." << endl;
         cin  >> input;
     }
-    cout << "Thank you. Exiting." << endl;
+    cout << "Thank you. Exiting." << endl;*/
+	TrajData data;
+	data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane2000_2006.tra");
     return 0;
+}
+
+TrajData::TrajData(){
+	m_nTrajectories = 0;
+	m_nOutliers = 0;
+	m_nOutlyingPartitions = 0;
+	m_nLineSegments = 0;
+	m_nTrajectoryPartitions = 0;
+
+	m_paramFraction = g_FRACTION_PARAMETER;
+	m_paramDistance = g_DISTANCE_PARAMETER;
+}
+
+TrajData::~TrajData(){
+
 }
 
 bool TrajData::readFile(string filePath)
@@ -42,6 +60,7 @@ bool TrajData::readFile(string filePath)
 
     if(!istr)
     {
+    	cout << "Could not read file " << filePath << "\n";
         return false;
     }
 
