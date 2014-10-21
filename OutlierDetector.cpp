@@ -6,8 +6,9 @@
 //#include "DistanceOutlier.h"
 #include "Param.h"
 #include <climits>
-#include <list>
+#include <vector>
 #include <math.h>
+#include <algorithm>
 
 
 // COutlierDetector
@@ -30,7 +31,7 @@ COutlierDetector::~COutlierDetector()
 
 bool COutlierDetector::ResetOutlierDetector()
 {
-	list<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	vector<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
 	//list<CTrajectory*>::iterator pos = trajectoryList.begin();
 	auto pos = trajectoryList.begin();
 	while (pos != trajectoryList.end())
@@ -63,7 +64,7 @@ bool COutlierDetector::ResetOutlierDetector()
 bool COutlierDetector::PartitionTrajectory()
 {
 #ifdef __USE_CONVENTIONAL_PARTITONING__
-	list<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	vector<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
 	auto pos = trajectoryList.begin();
 	while (pos != trajectoryList.end())
 	{
@@ -154,7 +155,7 @@ bool COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 
 	m_nTotalLineSegments = 0;
 
-	list<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	vector<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
 	auto pos = trajectoryList.begin();
 	while (pos != trajectoryList.end())
 	{
@@ -293,9 +294,15 @@ bool COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 				int trajectoryId1 = m_idArray[i].first, index1 = m_idArray[i].second;
 				int trajectoryId2 = m_idArray[j].first, index2 = m_idArray[j].second;
 				if (trajectoryId1 == trajectoryId2) continue;
-
-				CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
-				CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
+m_data->m_trajectoryList;
+				auto comp1 = [trajectoryId1](CTrajectory* traj) {return traj->m_trajectoryId == trajectoryId1;};
+				auto comp2 = [trajectoryId2](CTrajectory* traj) {return traj->m_trajectoryId == trajectoryId2;};
+				//CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
+				//CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
+				auto p1 = find_if(m_data->m_trajectoryList.begin(), m_data->m_trajectoryList.end(),comp1);
+				auto p2 = find_if(m_data->m_trajectoryList.begin(), m_data->m_trajectoryList.end(),comp2);
+				CTrajectory* pTrajectory1 = *p1;
+				CTrajectory* pTrajectory2 = *p2;
 
 				CMDPoint *startPoint1, *endPoint1, *startPoint2, *endPoint2;
 				float length1, length2;
@@ -357,8 +364,14 @@ bool COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 				int trajectoryId2 = m_idArray[j].first, index2 = m_idArray[j].second;
 				if (trajectoryId1 == trajectoryId2) continue;
 
-				CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
-				CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
+				auto comp1 = [trajectoryId1](CTrajectory* traj) {return traj->m_trajectoryId == trajectoryId1;};
+				auto comp2 = [trajectoryId2](CTrajectory* traj) {return traj->m_trajectoryId == trajectoryId2;};
+				//CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
+				//CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
+				auto p1 = find_if(m_data->m_trajectoryList.begin(), m_data->m_trajectoryList.end(),comp1);
+				auto p2 = find_if(m_data->m_trajectoryList.begin(), m_data->m_trajectoryList.end(),comp2);
+				CTrajectory* pTrajectory1 = *p1;
+				CTrajectory* pTrajectory2 = *p2;
 
 				CMDPoint *startPoint1, *endPoint1, *startPoint2, *endPoint2;
 				float length1, length2;

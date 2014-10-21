@@ -24,7 +24,7 @@ public:
 	int m_nOutliers;
 	int m_nOutlyingPartitions;
 	int m_maxNPoints;
-	std::list<CTrajectory*> m_trajectoryList;
+	std::vector<CTrajectory*> m_trajectoryList;
 	std::list<COutlier*> m_outlierList;
 	float m_paramFraction;
 	float m_paramDistance;
