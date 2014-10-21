@@ -2,6 +2,7 @@
 #define __PARAM_H__
 
 #define __COMBO_II__
+
 #if defined(__COMBO_I__)
 #undef __USE_CONVENTIONAL_PARTITONING__
 #define __USE_NO_PARTITIONING__

@@ -1,10 +1,12 @@
 // OutlierDetector.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "TraOutlier.h"
+#include "trajData.h"
 #include "OutlierDetector.h"
-#include "DistanceOutlier.h"
+//#include "DistanceOutlier.h"
+#include "Param.h"
+#include <climits>
+#include <list>
 #include <math.h>
 
 
@@ -14,9 +16,9 @@ COutlierDetector::COutlierDetector()
 {
 }
 
-COutlierDetector::COutlierDetector(CTraOutlierDoc* document)
+COutlierDetector::COutlierDetector(TrajData* data)
 {
-	m_document = document;
+	m_data = data;
 }
 
 COutlierDetector::~COutlierDetector()
@@ -26,60 +28,59 @@ COutlierDetector::~COutlierDetector()
 
 // COutlierDetector member functions
 
-BOOL COutlierDetector::ResetOutlierDetector()
+bool COutlierDetector::ResetOutlierDetector()
 {
-	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_document->m_trajectoryList;
-	POSITION pos = trajectoryList.GetHeadPosition();
-	while (pos != NULL)
+	list<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	//list<CTrajectory*>::iterator pos = trajectoryList.begin();
+	auto pos = trajectoryList.begin();
+	while (pos != trajectoryList.end())
 	{
-		CTrajectory* pTrajectory = trajectoryList.GetNext(pos);
+		CTrajectory* pTrajectory = *pos;
 
 		pTrajectory->m_nPartitionPoints = 0;
-		pTrajectory->m_partitionPointArray.RemoveAll();
-		pTrajectory->m_partitionPointArray.FreeExtra();
-		pTrajectory->m_partitionIndexArray.RemoveAll();
-		pTrajectory->m_partitionIndexArray.FreeExtra();
-		pTrajectory->m_partitionInfoArray.RemoveAll();
-		pTrajectory->m_partitionInfoArray.FreeExtra();
+		pTrajectory->m_partitionPointArray.clear();
+		pTrajectory->m_partitionIndexArray.clear();
+		pTrajectory->m_partitionInfoArray.clear();
 		pTrajectory->m_nOutlyingPartitions = 0;
-		pTrajectory->m_outlyingPartitionArray.RemoveAll();
-		pTrajectory->m_outlyingPartitionArray.FreeExtra();
+		pTrajectory->m_outlyingPartitionArray.clear();
 		pTrajectory->m_totalPartitionLength = 0.0;
 		pTrajectory->m_outlyingPartitionLength = 0.0;
 		pTrajectory->m_containOutlier = false;
+		pos++;
 	}
-	m_document->m_nOutlyingPartitions = 0;
+	m_data->m_nOutlyingPartitions = 0;
 
-	while (!m_document->m_outlierList.IsEmpty())
+	while (!m_data->m_outlierList.empty())
 	{
-		delete m_document->m_outlierList.GetHead();
-		m_document->m_outlierList.RemoveHead();
+		delete m_data->m_outlierList.front();
+		m_data->m_outlierList.pop_front();
 	}
-	m_document->m_nOutliers = 0;
+	m_data->m_nOutliers = 0;
 
-	return TRUE;
+	return true;
 }
 
-BOOL COutlierDetector::PartitionTrajectory()
+bool COutlierDetector::PartitionTrajectory()
 {
 #ifdef __USE_CONVENTIONAL_PARTITONING__
-	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_document->m_trajectoryList;
-	POSITION pos = trajectoryList.GetHeadPosition();
-	while (pos != NULL)
+	list<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	auto pos = trajectoryList.begin();
+	while (pos != trajectoryList.end())
 	{
-		CTrajectory* pTrajectory = trajectoryList.GetNext(pos);
+		CTrajectory* pTrajectory = *pos;
 		if (!FindOptimalPartition(pTrajectory))
-			return FALSE;
+			return false;
+		pos++;
 	}
 #endif
 
 	if (!StoreTrajectoryPartitionIntoIndex())
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
-BOOL COutlierDetector::FindOptimalPartition(CTrajectory* pTrajectory)
+bool COutlierDetector::FindOptimalPartition(CTrajectory* pTrajectory)
 {
 	int nPoints = pTrajectory->m_nPoints;
 	int startIndex = 0, length = 0;
@@ -141,23 +142,23 @@ BOOL COutlierDetector::FindOptimalPartition(CTrajectory* pTrajectory)
 	pTrajectory->StorePartitionInfo(aPartitionInfo);
 #endif
 
-	return TRUE;
+	return true;
 }
 
-BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
+bool COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 {
-	int nDimensions = m_document->m_nDimensions;
+	int nDimensions = m_data->m_nDimensions;
 	CMDPoint* startPoint;
 	CMDPoint* endPoint;
 	float length, totalLengthPerTrajectory;
 
 	m_nTotalLineSegments = 0;
 
-	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_document->m_trajectoryList;
-	POSITION pos = trajectoryList.GetHeadPosition();
-	while (pos != NULL)
+	list<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	auto pos = trajectoryList.begin();
+	while (pos != trajectoryList.end())
 	{
-		CTrajectory* pTrajectory = trajectoryList.GetNext(pos);
+		CTrajectory* pTrajectory = *pos;
 		totalLengthPerTrajectory = 0.0;				// reset for each trajectory
 
 #if defined(__USE_CONVENTIONAL_PARTITONING__)
@@ -180,26 +181,27 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 			totalLengthPerTrajectory += length;	// accumulate the length of a trajectory partition per trajectory
 
 			// keep the pair of a trajectory id and an order in the trajectory
-			m_idArray.Add(IntIntPair(pTrajectory->GetId(), i));
+			m_idArray.push_back(IntIntPair(pTrajectory->GetId(), i));
 			// temporarily keep the coordinate of a line segment for efficient distance computation
 			// m_lineSegmentArray will be released soon
-			m_lineSegmentArray.Add(PointPointPair(startPoint, endPoint));
+			m_lineSegmentArray.push_back(PointPointPair(startPoint, endPoint));
 			// keep the length of a line segment; this is used for determining the close trajectory
-			m_lengthArray.Add(length);
+			m_lengthArray.push_back(length);
 #if defined(__PARTITION_PRUNING_OPTIMIZATION__) 
-			m_partitionInfoArray.Add(&(pTrajectory->m_partitionInfoArray[i]));
+			m_partitionInfoArray.push_back(&(pTrajectory->m_partitionInfoArray[i]));
 #endif
 		}
 
 		pTrajectory->SetLength(totalLengthPerTrajectory);
+		pos++;
 	}
 
-	m_document->m_nTrajectoryPartitions = m_nTotalLineSegments;
+	m_data->m_nTrajectoryPartitions = m_nTotalLineSegments;
 
 	// pre-calculate the distance between two line segments
 	// START ...
-	m_distanceIndex.SetSize(m_nTotalLineSegments);
-	for (int i = 0; i < m_nTotalLineSegments; i++) m_distanceIndex[i].SetSize(m_nTotalLineSegments);
+	m_distanceIndex.resize(m_nTotalLineSegments);
+	for (int i = 0; i < m_nTotalLineSegments; i++) m_distanceIndex[i].resize(m_nTotalLineSegments);
 
 	// hold the perpendicular, parallel, angle distances
 	float distance[3];
@@ -282,7 +284,7 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 			float estimatedLowerBound = WEIGHTED_DISTANCE(m_lowerBoundPerp, m_lowerBoundPara, m_lowerBoundAngle);
 			float estimatedUpperBound = WEIGHTED_DISTANCE(m_upperBoundPerp, m_upperBoundPara, m_upperBoundAngle);
 
-			if (estimatedLowerBound > m_document->m_paramDistance || estimatedUpperBound < m_document->m_paramDistance)
+			if (estimatedLowerBound > m_data->m_paramDistance || estimatedUpperBound < m_data->m_paramDistance)
 			{				
 				nPrunedPartitionPairs++;
 			}
@@ -292,8 +294,8 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 				int trajectoryId2 = m_idArray[j].first, index2 = m_idArray[j].second;
 				if (trajectoryId1 == trajectoryId2) continue;
 
-				CTrajectory* pTrajectory1 = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(trajectoryId1));
-				CTrajectory* pTrajectory2 = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(trajectoryId2));
+				CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
+				CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
 
 				CMDPoint *startPoint1, *endPoint1, *startPoint2, *endPoint2;
 				float length1, length2;
@@ -314,27 +316,27 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 						if (length2 < MIN_LINESEGMENT_LENGTH || length2 > MAX_LINESEGMENT_LENGTH) continue;
 
 						ComputeDistanceBetweenTwoLineSegments(startPoint1, endPoint1, startPoint2, endPoint2, fineDistance);
-						if (WEIGHTED_DISTANCE(fineDistance[0], fineDistance[1], fineDistance[2]) <= m_document->m_paramDistance)
+						if (WEIGHTED_DISTANCE(fineDistance[0], fineDistance[1], fineDistance[2]) <= m_data->m_paramDistance)
 						{
 							if (m_closePartitionArrayIndexMap.count(IntIntPair(trajectoryId1,k)) != 0)  {
 								int index1 = m_closePartitionArrayIndexMap[IntIntPair(trajectoryId1,k)];
-								m_closePartitionArray[index1].Add(IntIntPair(trajectoryId2,l));
+								m_closePartitionArray[index1].push_back(IntIntPair(trajectoryId2,l));
 							}
 							else  {
 								int size1 = (int)m_closePartitionArrayIndexMap.size();
 								m_closePartitionArrayIndexMap[IntIntPair(trajectoryId1,k)] = size1;
-								m_closePartitionArray.SetSize(size1 + 1);
-								m_closePartitionArray[size1].Add(IntIntPair(trajectoryId2,l));
+								m_closePartitionArray.resize(size1 + 1);
+								m_closePartitionArray[size1].push_back(IntIntPair(trajectoryId2,l));
 							}
 							if (m_closePartitionArrayIndexMap.count(IntIntPair(trajectoryId2,l)) != 0)  {
 								int index2 = m_closePartitionArrayIndexMap[IntIntPair(trajectoryId2,l)];
-								m_closePartitionArray[index2].Add(IntIntPair(trajectoryId1,k));
+								m_closePartitionArray[index2].push_back(IntIntPair(trajectoryId1,k));
 							}
 							else  {
 								int size2 = (int)m_closePartitionArrayIndexMap.size();
 								m_closePartitionArrayIndexMap[IntIntPair(trajectoryId2,l)] = size2;
-								m_closePartitionArray.SetSize(size2 + 1);
-								m_closePartitionArray[size2].Add(IntIntPair(trajectoryId1,k));
+								m_closePartitionArray.resize(size2 + 1);
+								m_closePartitionArray[size2].push_back(IntIntPair(trajectoryId1,k));
 							}
 							m_finePartitionLengthMap[IntIntPair(trajectoryId1,k)] = length1;
 							m_finePartitionLengthMap[IntIntPair(trajectoryId2,l)] = length2;
@@ -349,14 +351,14 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 
 			// All line segments in this pair should be considered
 			// START ...
-			if (estimatedUpperBound < m_document->m_paramDistance)
+			if (estimatedUpperBound < m_data->m_paramDistance)
 			{
 				int trajectoryId1 = m_idArray[i].first, index1 = m_idArray[i].second;
 				int trajectoryId2 = m_idArray[j].first, index2 = m_idArray[j].second;
 				if (trajectoryId1 == trajectoryId2) continue;
 
-				CTrajectory* pTrajectory1 = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(trajectoryId1));
-				CTrajectory* pTrajectory2 = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(trajectoryId2));
+				CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
+				CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
 
 				CMDPoint *startPoint1, *endPoint1, *startPoint2, *endPoint2;
 				float length1, length2;
@@ -377,23 +379,23 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 
 						if (m_closePartitionArrayIndexMap.count(IntIntPair(trajectoryId1,k)) != 0)  {
 							int index1 = m_closePartitionArrayIndexMap[IntIntPair(trajectoryId1,k)];
-							m_closePartitionArray[index1].Add(IntIntPair(trajectoryId2,l));
+							m_closePartitionArray[index1].push_back(IntIntPair(trajectoryId2,l));
 						}
 						else  {
 							int size1 = (int)m_closePartitionArrayIndexMap.size();
 							m_closePartitionArrayIndexMap[IntIntPair(trajectoryId1,k)] = size1;
-							m_closePartitionArray.SetSize(size1 + 1);
-							m_closePartitionArray[size1].Add(IntIntPair(trajectoryId2,l));
+							m_closePartitionArray.resize(size1 + 1);
+							m_closePartitionArray[size1].push_back(IntIntPair(trajectoryId2,l));
 						}
 						if (m_closePartitionArrayIndexMap.count(IntIntPair(trajectoryId2,l)) != 0)  {
 							int index2 = m_closePartitionArrayIndexMap[IntIntPair(trajectoryId2,l)];
-							m_closePartitionArray[index2].Add(IntIntPair(trajectoryId1,k));
+							m_closePartitionArray[index2].push_back(IntIntPair(trajectoryId1,k));
 						}
 						else  {
 							int size2 = (int)m_closePartitionArrayIndexMap.size();
 							m_closePartitionArrayIndexMap[IntIntPair(trajectoryId2,l)] = size2;
-							m_closePartitionArray.SetSize(size2 + 1);
-							m_closePartitionArray[size2].Add(IntIntPair(trajectoryId1,k));
+							m_closePartitionArray.resize(size2 + 1);
+							m_closePartitionArray[size2].push_back(IntIntPair(trajectoryId1,k));
 						}
 						m_finePartitionLengthMap[IntIntPair(trajectoryId1,k)] = length1;
 						m_finePartitionLengthMap[IntIntPair(trajectoryId2,l)] = length2;
@@ -413,8 +415,8 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 			int trajectoryId1 = m_idArray[i].first, index1 = m_idArray[i].second;
 			int trajectoryId2 = m_idArray[j].first, index2 = m_idArray[j].second;
 
-			CTrajectory* pTrajectory1 = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(trajectoryId1));
-			CTrajectory* pTrajectory2 = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(trajectoryId2));
+			CTrajectory* pTrajectory1 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId1));
+			CTrajectory* pTrajectory2 = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(trajectoryId2));
 
 			CMDPoint *startPoint1, *endPoint1, *startPoint2, *endPoint2;
 			float realLowerBoundPerp  = (float)INT_MAX, realUpperBoundPerp  = (float)0.0;
@@ -454,23 +456,23 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 			}
 
 			// count the number of maximal prunings
-			if (realLowerBound > m_document->m_paramDistance || realUpperBound < m_document->m_paramDistance) nOptimalPrunedPairs++; 
+			if (realLowerBound > m_data->m_paramDistance || realUpperBound < m_data->m_paramDistance) nOptimalPrunedPairs++; 
 
 			// count the number of false dismissals
-			if ((estimatedLowerBound > m_document->m_paramDistance && realLowerBound <= m_document->m_paramDistance) || 
-			    (estimatedUpperBound < m_document->m_paramDistance && realUpperBound >= m_document->m_paramDistance))
+			if ((estimatedLowerBound > m_data->m_paramDistance && realLowerBound <= m_data->m_paramDistance) || 
+			    (estimatedUpperBound < m_data->m_paramDistance && realUpperBound >= m_data->m_paramDistance))
 				nFalsePrunedPairs++;
 			// ... END
-#endif	/* #ifdef __VERIFY_TIGHTNESS__ */
-#endif	/* #if defined(__PARTITION_PRUNING_OPTIMIZATION__) */
-		}	/* for (int j = i + 1; j < m_nTotalLineSegments; j++) */
-	}	/* for (int i = 0; i < m_nTotalLineSegments; i++) */
+#endif
+#endif	// #if defined(__PARTITION_PRUNING_OPTIMIZATION__)
+		}	// for (int j = i + 1; j < m_nTotalLineSegments; j++)
+	}	// for (int i = 0; i < m_nTotalLineSegments; i++)
 	// ... END	
 
 #ifdef __VERIFY_TIGHTNESS__
 	FILE *fp;
 	fopen_s(&fp, RESULT_FILE, "a");
-	CT2CA temp1(m_document->m_inputFilePath);
+	CT2CA temp1(m_data->m_inputFilePath);
 	std::string temp2(temp1);
 #ifdef __COMBO_I__
 	fprintf(fp, "COMBO I: %s %.1f => %d, %d, %d, %d\n", temp2.c_str(), g_DISTANCE_PARAMETER, nTotalPartitionPairs, nPrunedPartitionPairs, nFalsePrunedPairs, nOptimalPrunedPairs);
@@ -478,29 +480,29 @@ BOOL COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 	fprintf(fp, "COMBO II: %s %.1f => %d, %d, %d, %d\n", temp2.c_str(), g_DISTANCE_PARAMETER, nTotalPartitionPairs, nPrunedPartitionPairs, nFalsePrunedPairs, nOptimalPrunedPairs);
 #endif
 	fclose(fp);
-#endif	/* #ifdef __VERIFY_TIGHTNESS__ */
+#endif	// #ifdef __VERIFY_TIGHTNESS__
 
 	// deallocate the copy of all line segments
-	m_lineSegmentArray.RemoveAll();
-	m_lineSegmentArray.FreeExtra();
+	m_lineSegmentArray.clear();
+	//m_lineSegmentArray.FreeExtra();
 
-	return TRUE;
+	return true;
 }
-
+/*
 BOOL COutlierDetector::DetectOutlier()
 {
-	CDistanceOutlier distanceOutlier(m_document->m_nTrajectories, m_nTotalLineSegments, &m_idArray, &m_distanceIndex);
-	distanceOutlier.m_document = m_document;	// pass the pointer of the document
+	CDistanceOutlier distanceOutlier(m_data->m_nTrajectories, m_nTotalLineSegments, &m_idArray, &m_distanceIndex);
+	distanceOutlier.m_document = m_data;	// pass the pointer of the document
 
 	// setup two parameters: p (i.e., fraction) and D (i.e., distance)
-	distanceOutlier.SetFractionParameter(m_document->m_paramFraction);
-	distanceOutlier.SetDistanceParameter(m_document->m_paramDistance);
+	distanceOutlier.SetFractionParameter(m_data->m_paramFraction);
+	distanceOutlier.SetDistanceParameter(m_data->m_paramDistance);
 
 	// setup the array of trajectory partitions' length
 	distanceOutlier.SetLengthArray(&m_lengthArray);
 
 #ifdef __PRECOMPUTE_DENSITY__
-	distanceOutlier.SetDensityFilePath(m_document->m_inputFilePath + CString(".density"));
+	distanceOutlier.SetDensityFilePath(m_data->m_inputFilePath + CString(".density"));
 #endif
 
 	CArray<bool,bool> outlierFlagArray;
@@ -523,7 +525,7 @@ BOOL COutlierDetector::DetectOutlier()
 #ifndef __PARTITION_PRUNING_OPTIMIZATION__
 	int currLineSegmentId = 0;
 
-	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_document->m_trajectoryList;
+	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
 	POSITION pos = trajectoryList.GetHeadPosition();
 	while (pos != NULL)
 	{
@@ -539,7 +541,7 @@ BOOL COutlierDetector::DetectOutlier()
 				if (outlierFlagArray[currLineSegmentId])
 				{
 					pTrajectory->AddOutlyingPartition(m_idArray[currLineSegmentId].second);
-					m_document->m_nOutlyingPartitions++;
+					m_data->m_nOutlyingPartitions++;
 				}
 				if (++currLineSegmentId >= m_nTotalLineSegments) break;
 			}
@@ -553,19 +555,19 @@ BOOL COutlierDetector::DetectOutlier()
 			currOutlierId++;		// increase the number of outliers
 		}
 	}
-#else	/* #ifndef __PARTITION_PRUNING_OPTIMIZATION__ */
+#else	// #ifndef __PARTITION_PRUNING_OPTIMIZATION__
 	map<IntIntPair,int>::const_iterator iter;
 	for (iter = m_closePartitionArrayIndexMap.begin(); iter != m_closePartitionArrayIndexMap.end(); iter++)
 	{
 		if (outlierFlagArray[iter->second])
 		{
-			CTrajectory* pTrajectory = m_document->m_trajectoryList.GetAt(m_document->m_trajectoryList.FindIndex(iter->first.first));
+			CTrajectory* pTrajectory = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(iter->first.first));
 			pTrajectory->AddOutlyingPartition(iter->first.second);
-			m_document->m_nOutlyingPartitions++;
+			m_data->m_nOutlyingPartitions++;
 		}
 	}
 
-	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_document->m_trajectoryList;
+	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
 	POSITION pos = trajectoryList.GetHeadPosition();
 	while (pos != NULL)
 	{
@@ -579,7 +581,7 @@ BOOL COutlierDetector::DetectOutlier()
 			currOutlierId++;		// increase the number of outliers
 		}
 	}
-#endif	/* #ifndef __PARTITION_PRUNING_OPTIMIZATION__ */
+#endif	// #ifndef __PARTITION_PRUNING_OPTIMIZATION__
 
 	return TRUE;
 }
@@ -618,14 +620,17 @@ BOOL COutlierDetector::CheckOutlyingProportion(CTrajectory* pTrajectory, float m
 
 BOOL COutlierDetector::GenerateAndSetupOutlier(CTrajectory* pTrajectory, int outlierId)
 {
-	COutlier* pOutlierItem = new COutlier(outlierId, pTrajectory->GetId(), m_document->m_nDimensions);
+	COutlier* pOutlierItem = new COutlier(outlierId, pTrajectory->GetId(), m_data->m_nDimensions);
 
 	// copy the information about an outlier to a newly created structure
 	pOutlierItem->SetupInfo(pTrajectory);
 	// append the newly created structure to the list
-	m_document->m_outlierList.AddTail(pOutlierItem);
+	m_data->m_outlierList.AddTail(pOutlierItem);
 	// increase the number of outlier trajectories
-	m_document->m_nOutliers++;
+	m_data->m_nOutliers++;
 
 	return TRUE;
 }
+
+*/
+

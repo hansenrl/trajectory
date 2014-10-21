@@ -1,11 +1,13 @@
 #pragma once
 
-#include "TraOutlierDoc.h"
+#include "trajData.h"
 #include "Trajectory.h"
 #include "Outlier.h"
+#include "Param.h"
 
 #include <set>
 #include <map>
+#include <vector>
 using namespace std;
 
 
@@ -13,23 +15,23 @@ using namespace std;
 
 typedef pair<int,int> IntIntPair;
 typedef pair<CMDPoint*,CMDPoint*> PointPointPair;
-typedef CArray<float,float> FloatArray;
+typedef vector<float> FloatArray;
 
 class COutlierDetector
 {
 public:
 	COutlierDetector();
-	COutlierDetector(CTraOutlierDoc* document);
+	COutlierDetector(TrajData* data);
 	virtual ~COutlierDetector();
 public:
-	CTraOutlierDoc* m_document;
+	TrajData* m_data;
 private:
 	int m_nTotalLineSegments;
-	CArray<IntIntPair,IntIntPair> m_idArray;
-	CArray<PointPointPair,PointPointPair> m_lineSegmentArray;
-	CArray<FloatArray,FloatArray> m_distanceIndex;
+	vector<IntIntPair> m_idArray;
+	vector<PointPointPair> m_lineSegmentArray;
+	vector<FloatArray> m_distanceIndex;
 	FloatArray m_lengthArray;
-	CArray<PartitionInfo*,PartitionInfo*> m_partitionInfoArray;
+	vector<PartitionInfo*> m_partitionInfoArray;
 	// programming trick: avoid frequent execution of the new and delete operations
 	CMDPoint m_vector1, m_vector2;
 	CMDPoint m_projectionPoint;
@@ -41,19 +43,19 @@ private:
 	float m_lowerBoundPerp, m_lowerBoundPara, m_lowerBoundAngle;
 	float m_upperBoundPerp, m_upperBoundPara, m_upperBoundAngle;
 	map<IntIntPair,int> m_closePartitionArrayIndexMap;
-	CArray<CArray<IntIntPair,IntIntPair>,CArray<IntIntPair,IntIntPair>> m_closePartitionArray;
+	vector<vector<IntIntPair> > m_closePartitionArray;
 	map<IntIntPair,float> m_finePartitionLengthMap;
 	map<IntIntPair,int> m_coarsePartitionIdMap;
 #endif	/* #if defined(__PARTITION_PRUNING_OPTIMIZATION__) */
 public:
-	BOOL ResetOutlierDetector();
-	BOOL PartitionTrajectory();
-	BOOL DetectOutlier();
+	bool ResetOutlierDetector();
+	bool PartitionTrajectory();
+	bool DetectOutlier();
 private:
-	BOOL FindOptimalPartition(CTrajectory* pTrajectory);
-	BOOL StoreTrajectoryPartitionIntoIndex();
-	BOOL CheckOutlyingProportion(CTrajectory* pTrajectory, float minProportion);
-	BOOL GenerateAndSetupOutlier(CTrajectory* pTrajectory, int outlierId);
+	bool FindOptimalPartition(CTrajectory* pTrajectory);
+	bool StoreTrajectoryPartitionIntoIndex();
+	bool CheckOutlyingProportion(CTrajectory* pTrajectory, float minProportion);
+	bool GenerateAndSetupOutlier(CTrajectory* pTrajectory, int outlierId);
 private:
 	int ComputeModelCost(CTrajectory* pTrajectory, int startPIndex, int endPIndex);
 	int ComputeEncodingCost(CTrajectory* pTrajectory, int startPIndex, int endPIndex);
