@@ -3,7 +3,7 @@
 
 #include "trajData.h"
 #include "OutlierDetector.h"
-//#include "DistanceOutlier.h"
+#include "DistanceOutlier.h"
 #include "Param.h"
 #include <climits>
 #include <vector>
@@ -501,11 +501,11 @@ m_data->m_trajectoryList;
 
 	return true;
 }
-/*
-BOOL COutlierDetector::DetectOutlier()
+
+bool COutlierDetector::DetectOutlier()
 {
 	CDistanceOutlier distanceOutlier(m_data->m_nTrajectories, m_nTotalLineSegments, &m_idArray, &m_distanceIndex);
-	distanceOutlier.m_document = m_data;	// pass the pointer of the document
+	distanceOutlier.m_data = m_data;	// pass the pointer of the document
 
 	// setup two parameters: p (i.e., fraction) and D (i.e., distance)
 	distanceOutlier.SetFractionParameter(m_data->m_paramFraction);
@@ -515,14 +515,14 @@ BOOL COutlierDetector::DetectOutlier()
 	distanceOutlier.SetLengthArray(&m_lengthArray);
 
 #ifdef __PRECOMPUTE_DENSITY__
-	distanceOutlier.SetDensityFilePath(m_data->m_inputFilePath + CString(".density"));
+	distanceOutlier.SetDensityFilePath((m_data->m_inputFilePath + ".density"));
 #endif
 
-	CArray<bool,bool> outlierFlagArray;
+	vector<bool> outlierFlagArray;
 #ifndef __PARTITION_PRUNING_OPTIMIZATION__
 	outlierFlagArray.SetSize(m_nTotalLineSegments);
 #else
-	outlierFlagArray.SetSize((int)m_closePartitionArrayIndexMap.size());
+	outlierFlagArray.resize((int)m_closePartitionArrayIndexMap.size());
 
 	// setup the information for pruning optimization
 	distanceOutlier.SetCloseTrajectoryPartition(&m_closePartitionArrayIndexMap, &m_closePartitionArray);
@@ -532,7 +532,7 @@ BOOL COutlierDetector::DetectOutlier()
 
 	// identify outlying trajectory partitions
 	if (!distanceOutlier.DetectOutlyingLineSegment(&outlierFlagArray))
-		return FALSE;
+		return false;
 
 	int currOutlierId = 0;
 #ifndef __PARTITION_PRUNING_OPTIMIZATION__
@@ -574,17 +574,19 @@ BOOL COutlierDetector::DetectOutlier()
 	{
 		if (outlierFlagArray[iter->second])
 		{
-			CTrajectory* pTrajectory = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(iter->first.first));
+			auto comp = [&](CTrajectory* traj) { return traj->m_trajectoryId == iter->first.first; };
+			CTrajectory* pTrajectory = *(find_if(m_data->m_trajectoryList.begin(), m_data->m_trajectoryList.end(), comp));
+			//CTrajectory* pTrajectory = m_data->m_trajectoryList.GetAt(m_data->m_trajectoryList.FindIndex(iter->first.first));
 			pTrajectory->AddOutlyingPartition(iter->first.second);
 			m_data->m_nOutlyingPartitions++;
 		}
 	}
 
-	CTypedPtrList<CObList,CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
-	POSITION pos = trajectoryList.GetHeadPosition();
-	while (pos != NULL)
+	vector<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
+	auto pos = trajectoryList.begin();
+	while (pos != trajectoryList.end())
 	{
-		CTrajectory* pTrajectory = trajectoryList.GetNext(pos);
+		CTrajectory* pTrajectory = *pos;
 
 		// check if the proportion of outlying trajectory partitions is significant
 		if (CheckOutlyingProportion(pTrajectory, g_MINIMUM_OUTLYING_PROPORTION))
@@ -593,13 +595,14 @@ BOOL COutlierDetector::DetectOutlier()
 			GenerateAndSetupOutlier(pTrajectory, currOutlierId);
 			currOutlierId++;		// increase the number of outliers
 		}
+		pos++;
 	}
 #endif	// #ifndef __PARTITION_PRUNING_OPTIMIZATION__
 
-	return TRUE;
+	return true;
 }
 
-BOOL COutlierDetector::CheckOutlyingProportion(CTrajectory* pTrajectory, float minProportion)
+bool COutlierDetector::CheckOutlyingProportion(CTrajectory* pTrajectory, float minProportion)
 {
 	CMDPoint* startPoint;
 	CMDPoint* endPoint;
@@ -626,24 +629,23 @@ BOOL COutlierDetector::CheckOutlyingProportion(CTrajectory* pTrajectory, float m
 
 	// check if the outlying proportion is larger than a given threshold
 	if ((totalOutlyingLength / pTrajectory->GetLength()) >= minProportion)
-		return TRUE;
+		return true;
 	else
-		return FALSE;
+		return false;
 }
 
-BOOL COutlierDetector::GenerateAndSetupOutlier(CTrajectory* pTrajectory, int outlierId)
+bool COutlierDetector::GenerateAndSetupOutlier(CTrajectory* pTrajectory, int outlierId)
 {
 	COutlier* pOutlierItem = new COutlier(outlierId, pTrajectory->GetId(), m_data->m_nDimensions);
 
 	// copy the information about an outlier to a newly created structure
 	pOutlierItem->SetupInfo(pTrajectory);
 	// append the newly created structure to the list
-	m_data->m_outlierList.AddTail(pOutlierItem);
+	m_data->m_outlierList.push_back(pOutlierItem);
 	// increase the number of outlier trajectories
 	m_data->m_nOutliers++;
 
-	return TRUE;
+	return true;
 }
 
-*/
 

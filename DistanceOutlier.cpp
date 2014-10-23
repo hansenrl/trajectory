@@ -1,7 +1,6 @@
 // DistanceOutlier.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "TraOutlier.h"
 #include "DistanceOutlier.h"
 #include <fstream>
@@ -22,7 +21,7 @@ CDistanceOutlier::~CDistanceOutlier()
 {
 }
 
-BOOL CDistanceOutlier::DetectOutlyingLineSegment(CArray<bool,bool>* result)
+bool CDistanceOutlier::DetectOutlyingLineSegment(vector<bool>* result)
 {
 	m_nNearTrajectories = (int)ceil((double)m_nTrajectories * (1.0 - (double)m_fractionParam));
 
@@ -66,7 +65,7 @@ BOOL CDistanceOutlier::DetectOutlyingLineSegment(CArray<bool,bool>* result)
 	{
 		float length         = (*m_finePartitionLengthMap)[iter->first];
 		int currIndex        = iter->second;
-		int nClosePartitions = (int)(m_closePartitionArray->GetAt(currIndex)).GetCount();
+		int nClosePartitions = (int)(*m_closePartitionArray)[currIndex].size();
 		IntIntPair closePartition;
 
 		nCloseTrajectories = 0;
@@ -74,7 +73,7 @@ BOOL CDistanceOutlier::DetectOutlyingLineSegment(CArray<bool,bool>* result)
 
 		for (int i = 0; i < nClosePartitions; i++)
 		{
-			closePartition = (m_closePartitionArray->GetAt(currIndex)).GetAt(i);
+			closePartition = (*m_closePartitionArray)[currIndex][i];
 
 			if (closeTrajectoryMap.find(closePartition.first) != closeTrajectoryMap.end())
 				closeTrajectoryMap[closePartition.first] += (*m_finePartitionLengthMap)[closePartition];
@@ -94,9 +93,9 @@ BOOL CDistanceOutlier::DetectOutlyingLineSegment(CArray<bool,bool>* result)
 #else
 		if (nCloseTrajectories <= m_nNearTrajectories)
 #endif
-			result->SetAt(currIndex, true);
+			(*result)[currIndex] = true;
 		else
-			result->SetAt(currIndex, false);
+			(*result)[currIndex] = false;
 
 #ifdef __VISUALIZE_DEBUG_INFO__
 		GetLineSegmentPoint(iter->first.first, iter->first.second, &m_document->m_currStartPoint, &m_document->m_currEndPoint);
@@ -119,12 +118,12 @@ BOOL CDistanceOutlier::DetectOutlyingLineSegment(CArray<bool,bool>* result)
 	}
 #endif	/* #ifndef __PARTITION_PRUNING_OPTIMIZATION__ */
 
-	return TRUE;
+	return true;
 }
 
 int CDistanceOutlier::GetNumOfNearTrajectories(int index)
 {
-	int currTrajectoryId = (m_idArray->GetAt(index)).first;
+	int currTrajectoryId = (*m_idArray)[index].first;
 	int nNearTrajectories = 0;
 
 	for (int trajectoryId = 0; trajectoryId < currTrajectoryId; trajectoryId++)
@@ -173,14 +172,14 @@ bool CDistanceOutlier::IsTrajectoryNear(int lineSegmentId, int trajectoryId)
 
 void CDistanceOutlier::ConstructRangeOfTrajectory()
 {
-	m_trajectoryRange.SetSize(m_nTrajectories);
+	m_trajectoryRange.resize(m_nTrajectories);
 
 	for (int i = 0; i < m_nTrajectories; i++)
 		m_trajectoryRange[i].first = m_trajectoryRange[i].second = 0;
 
 	for (int i = 0; i < m_nLineSegments; i++)
 	{
-		int trajectoryId = m_idArray->GetAt(i).first;
+		int trajectoryId = (*m_idArray)[i].first;
 		// the first appearance of a specific trajectory
 		if (m_trajectoryRange[trajectoryId].first == 0)
 			m_trajectoryRange[trajectoryId].first = m_trajectoryRange[trajectoryId].second = i;
@@ -199,7 +198,7 @@ void CDistanceOutlier::MeasureDensityOfLineSegment()
 	{
 		int nLineSegments, trajectoryId, offset;
 		istr >> nLineSegments;
-		m_densityArray.SetSize(nLineSegments);
+		m_densityArray.resize(nLineSegments);
 		for (int i = 0; i < nLineSegments; i++)
 		{
 			istr >> trajectoryId >> offset >> m_densityArray[i];
@@ -260,7 +259,7 @@ void CDistanceOutlier::MeasureDensityOfLineSegment()
 			if (DISTANCE_MATRIX(i, j) <= stDev) lineSegmentCount += 1;
 
 		totalDensity += lineSegmentCount;
-		m_densityArray.Add((float)lineSegmentCount);
+		m_densityArray.push_back((float)lineSegmentCount);
 	}
 
 	avgDensity = (float)totalDensity / (float)m_nLineSegments;

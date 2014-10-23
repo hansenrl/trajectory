@@ -4,9 +4,9 @@ CFLAGS=-c -g -std=c++11
 all: main
 
 clean:
-	rm main.o Trajectory.o MDPoint.o OutlierDetector.o main
+	rm main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o main
     
-main: main.o Trajectory.o MDPoint.o OutlierDetector.o
+main: main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o
 	$(CC) -g -o main main.o Trajectory.o MDPoint.o
     
 main.o: main.cpp
@@ -20,3 +20,6 @@ MDPoint.o: MDPoint.cpp
 	
 OutlierDetector.o: OutlierDetector.cpp
 	$(CC) $(CFLAGS) OutlierDetector.cpp
+	
+DistanceOutlier.o: DistanceOutlier.cpp
+	$(CC) $(CFLAGS) DistanceOutlier.cpp
