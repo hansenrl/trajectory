@@ -1,25 +1,16 @@
 CC=g++
-CFLAGS=-c -g -std=c++11
+CFLAGS=-std=c++11 -g
+DEPS=DistanceOutlier.h MDPoint.h Outlier.h OutlierDetector.h trajData.h Trajectory.h Param.h
 
 all: main
 
 clean:
-	rm main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o main
+	rm main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o Measure.o Outlier.o main
     
-main: main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o
-	$(CC) -g -o main main.o Trajectory.o MDPoint.o
+main: main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o Measure.o Outlier.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.cpp $(DEPS)
+	$(CC) $(CFLAGS) -c -o $@ $<
     
-main.o: main.cpp
-	$(CC) $(CFLAGS) main.cpp
-	
-Trajectory.o: Trajectory.cpp
-	$(CC) $(CFLAGS) Trajectory.cpp
-	
-MDPoint.o: MDPoint.cpp
-	$(CC) $(CFLAGS) MDPoint.cpp
-	
-OutlierDetector.o: OutlierDetector.cpp
-	$(CC) $(CFLAGS) OutlierDetector.cpp
-	
-DistanceOutlier.o: DistanceOutlier.cpp
-	$(CC) $(CFLAGS) DistanceOutlier.cpp
+

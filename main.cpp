@@ -6,6 +6,7 @@
 #include "trajData.h"
 #include "MDPoint.h"
 #include "Trajectory.h"
+#include "OutlierDetector.h"
 #include "Param.h"
 
 using namespace std;
@@ -24,7 +25,13 @@ int main () {
     }
     cout << "Thank you. Exiting." << endl;*/
 	TrajData data;
+	//data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane1950_2006.tra");
 	data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane2000_2006.tra");
+	COutlierDetector outlierDetector(&data);
+	outlierDetector.PartitionTrajectory();
+	outlierDetector.DetectOutlier();
+	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
+	cout << "Finished!\n";
     return 0;
 }
 

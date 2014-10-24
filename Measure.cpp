@@ -1,7 +1,6 @@
 // Measure.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "TraOutlier.h"
 #include "OutlierDetector.h"
 #include <math.h>
