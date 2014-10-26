@@ -21,7 +21,7 @@
 
 const float g_FRACTION_PARAMETER = (float)0.95;
 const float g_DISTANCE_PARAMETER = (float)82.0; // (float)80.0;
-const float g_MINIMUM_OUTLYING_PROPORTION = (float)0.20; // (float)0.10;
+const float g_MINIMUM_OUTLYING_PROPORTION = (float)0.50; // (float)0.10;
 
 const int MDL_COST_ADVANTAGE = 20;
 const float MIN_LINESEGMENT_LENGTH = 1.0;

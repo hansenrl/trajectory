@@ -5,6 +5,7 @@
 #include <cstring>
 #include <vector>
 #include <tuple>
+#include <set>
 #include "trajData.h"
 #include "MDPoint.h"
 #include "Trajectory.h"
@@ -37,20 +38,44 @@ int main () {
 	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
 	cout << "Finished!\n";
 
+	set<int> outlier_trajectories;
+	for (COutlier* outlier_p : data.m_outlierList)
+	{
+		outlier_trajectories.insert((*outlier_p).GetTrajectoryId());
+	}
+
 	Gnuplot gp;
 	gp << "set term post eps color\n";
 	gp << "set output '/home/ross/test.eps'\n";
+	gp << "unset key\n";
 
-	vector<tuple<float, float> > pts;
-	CTrajectory traj = *data.m_trajectoryList[0];
-
-	vector<CMDPoint> points = traj.GetPointArray();
-	for ( CMDPoint point : points){
-		pts.push_back(make_tuple(point.GetCoordinate(0), point.GetCoordinate(1)));
+	if(outlier_trajectories.find(data.m_trajectoryList[0]->GetId()) == outlier_trajectories.end())
+	{
+		gp << "plot '-' using 1:2 with lines title '0' linetype -1";
+	} else {
+		gp << "plot '-' using 1:2 with lines title '0' linetype 1";
 	}
-	gp << "plot '-' using 1:2 with lines title '0'\n";
-	gp.send1d(pts);
+	for(int i = 1; i < data.m_trajectoryList.size(); i++){
+		if(outlier_trajectories.find(data.m_trajectoryList[i]->GetId()) == outlier_trajectories.end())
+		{
+			gp << ", '' using 1:2 with lines title '0' linetype -1";
+		} else {
+			gp << ", '' using 1:2 with lines title '0' linetype 1";
+		}
+	}
+	gp << "\n";
 
+	//CTrajectory traj = *data.m_trajectoryList[0];
+	for( CTrajectory* traj_p : data.m_trajectoryList){
+		vector<tuple<float, float> > pts;
+		CTrajectory traj = *traj_p;
+		vector<CMDPoint> points = traj.GetPointArray();
+		for ( CMDPoint point : points){
+			pts.push_back(make_tuple(point.GetCoordinate(0), point.GetCoordinate(1)));
+		}
+
+		gp.send1d(pts);
+	}
 	/*
 	gp << "set term post eps color\n";
 	gp << "set output '/home/ross/test.eps'\n";
