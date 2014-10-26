@@ -3,11 +3,14 @@
 #include <string>
 #include <climits>
 #include <cstring>
+#include <vector>
+#include <tuple>
 #include "trajData.h"
 #include "MDPoint.h"
 #include "Trajectory.h"
 #include "OutlierDetector.h"
 #include "Param.h"
+#include "gnuplot-iostream.h"
 
 using namespace std;
 
@@ -27,11 +30,43 @@ int main () {
 	TrajData data;
 	//data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane1950_2006.tra");
 	data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane2000_2006.tra");
+
 	COutlierDetector outlierDetector(&data);
 	outlierDetector.PartitionTrajectory();
 	outlierDetector.DetectOutlier();
 	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
 	cout << "Finished!\n";
+
+	Gnuplot gp;
+	gp << "set term post eps color\n";
+	gp << "set output '/home/ross/test.eps'\n";
+
+	vector<tuple<float, float> > pts;
+	CTrajectory traj = *data.m_trajectoryList[0];
+
+	vector<CMDPoint> points = traj.GetPointArray();
+	for ( CMDPoint point : points){
+		pts.push_back(make_tuple(point.GetCoordinate(0), point.GetCoordinate(1)));
+	}
+	gp << "plot '-' using 1:2 with lines title '0'\n";
+	gp.send1d(pts);
+
+	/*
+	gp << "set term post eps color\n";
+	gp << "set output '/home/ross/test.eps'\n";
+	vector<tuple<double, double, double, double> > pts_A;
+	for(double alpha=0; alpha<1; alpha+=1.0/24.0) {
+		double theta = alpha*2.0*3.14159;
+		pts_A.push_back(make_tuple(
+			 cos(theta),
+			 sin(theta),
+			-cos(theta)*0.1,
+			-sin(theta)*0.1
+		));
+	}
+	gp << "plot '-' with vectors title 'pts_A', '-' with vectors title 'pts_B'\n";
+	gp.send1d(pts_A);
+	*/
     return 0;
 }
 
