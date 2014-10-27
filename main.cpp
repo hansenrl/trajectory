@@ -37,45 +37,8 @@ int main () {
 	outlierDetector.DetectOutlier();
 	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
 	cout << "Finished!\n";
+	data.OutputTrajectoryPlot("/home/ross/test.eps");
 
-	set<int> outlier_trajectories;
-	for (COutlier* outlier_p : data.m_outlierList)
-	{
-		outlier_trajectories.insert((*outlier_p).GetTrajectoryId());
-	}
-
-	Gnuplot gp;
-	gp << "set term post eps color\n";
-	gp << "set output '/home/ross/test.eps'\n";
-	gp << "unset key\n";
-
-	if(outlier_trajectories.find(data.m_trajectoryList[0]->GetId()) == outlier_trajectories.end())
-	{
-		gp << "plot '-' using 1:2 with lines title '0' linetype -1";
-	} else {
-		gp << "plot '-' using 1:2 with lines title '0' linetype 1";
-	}
-	for(int i = 1; i < data.m_trajectoryList.size(); i++){
-		if(outlier_trajectories.find(data.m_trajectoryList[i]->GetId()) == outlier_trajectories.end())
-		{
-			gp << ", '' using 1:2 with lines title '0' linetype -1";
-		} else {
-			gp << ", '' using 1:2 with lines title '0' linetype 1";
-		}
-	}
-	gp << "\n";
-
-	//CTrajectory traj = *data.m_trajectoryList[0];
-	for( CTrajectory* traj_p : data.m_trajectoryList){
-		vector<tuple<float, float> > pts;
-		CTrajectory traj = *traj_p;
-		vector<CMDPoint> points = traj.GetPointArray();
-		for ( CMDPoint point : points){
-			pts.push_back(make_tuple(point.GetCoordinate(0), point.GetCoordinate(1)));
-		}
-
-		gp.send1d(pts);
-	}
 	/*
 	gp << "set term post eps color\n";
 	gp << "set output '/home/ross/test.eps'\n";
@@ -108,6 +71,46 @@ TrajData::TrajData(){
 
 TrajData::~TrajData(){
 
+}
+
+void TrajData::OutputTrajectoryPlot(string filePath){
+	set<int> outlier_trajectories;
+	for (COutlier* outlier_p : m_outlierList)
+	{
+		outlier_trajectories.insert((*outlier_p).GetTrajectoryId());
+	}
+
+	Gnuplot gp;
+	gp << "set term post eps color\n";
+	gp << "set output '" << filePath << "'\n";
+	gp << "unset key\n";
+
+	if(outlier_trajectories.find(m_trajectoryList[0]->GetId()) == outlier_trajectories.end())
+	{
+		gp << "plot '-' using 1:2 with lines title '0' linetype -1";
+	} else {
+		gp << "plot '-' using 1:2 with lines title '0' linetype 1";
+	}
+	for(int i = 1; i < m_trajectoryList.size(); i++){
+		if(outlier_trajectories.find(m_trajectoryList[i]->GetId()) == outlier_trajectories.end())
+		{
+			gp << ", '' using 1:2 with lines title '0' linetype -1";
+		} else {
+			gp << ", '' using 1:2 with lines title '0' linetype 1";
+		}
+	}
+	gp << "\n";
+
+	for( CTrajectory* traj_p : m_trajectoryList){
+		vector<tuple<float, float> > pts;
+		CTrajectory traj = *traj_p;
+		vector<CMDPoint> points = traj.GetPointArray();
+		for ( CMDPoint point : points){
+			pts.push_back(make_tuple(point.GetCoordinate(0), point.GetCoordinate(1)));
+		}
+
+		gp.send1d(pts);
+	}
 }
 
 bool TrajData::readFile(string filePath)

@@ -32,6 +32,7 @@ public:
 	int m_nTrajectoryPartitions;
 
 	bool readFile(string);
+	void OutputTrajectoryPlot(string);
 // DEBUG ...
 #ifdef __VISUALIZE_DEBUG_INFO__
 	float m_lineSegmentDensity;
