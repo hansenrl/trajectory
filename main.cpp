@@ -89,15 +89,22 @@ void TrajData::OutputTrajectoryPlot(string filePath){
 	{
 		gp << "plot '-' using 1:2 with lines title '0' linetype -1";
 	} else {
-		gp << "plot '-' using 1:2 with lines title '0' linetype 1";
+		gp << "plot '-' using 1:2 with lines title '0' linetype 1 lw 2";
 	}
 	for(int i = 1; i < m_trajectoryList.size(); i++){
 		if(outlier_trajectories.find(m_trajectoryList[i]->GetId()) == outlier_trajectories.end())
 		{
 			gp << ", '' using 1:2 with lines title '0' linetype -1";
 		} else {
-			gp << ", '' using 1:2 with lines title '0' linetype 1";
+			gp << ", '' using 1:2 with lines title '0' linetype 1 lw 2";
 		}
+	}
+	int totalOutlyingPartitions = 0;
+	for( COutlier* outlier : m_outlierList){
+		totalOutlyingPartitions += outlier->GetNOutlyingPartitions();
+	}
+	for(int i = 0; i < totalOutlyingPartitions; i++){
+		gp << ", '' using 1:2 with lines title '0' linetype 1 lc rgb 'green' lw 2";
 	}
 	gp << "\n";
 
@@ -110,6 +117,23 @@ void TrajData::OutputTrajectoryPlot(string filePath){
 		}
 
 		gp.send1d(pts);
+	}
+	int i = 0;
+	for( COutlier* outlier : m_outlierList){
+		auto partitions = outlier->GetOutlyingPartitionArray();
+		for( auto partition : partitions){
+			vector<tuple<float, float> > pts;
+			pts.push_back(make_tuple(partition.first.GetCoordinate(0),partition.first.GetCoordinate(1)));
+			pts.push_back(make_tuple(partition.second.GetCoordinate(0),partition.second.GetCoordinate(1)));
+			gp.send1d(pts);
+			i++;
+			if(i == 2) {
+				//break;
+			}
+		}
+		if(i == 2) {
+			//break;
+		}
 	}
 }
 

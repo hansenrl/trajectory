@@ -31,6 +31,8 @@ public:
 	void SetId(int id) { m_outlierId = id; }
 	const int GetId() const { return m_outlierId; }
 	const int GetTrajectoryId() const { return m_trajectoryId; }
+	const int GetNOutlyingPartitions() const { return m_nOutlyingPartitions; }
+	const vector<LineSegment> GetOutlyingPartitionArray() const { return m_outlyingPartitionArray; }
 	const float GetOutlyingRatio() const { return m_outlyingRatio; }
 	void SetPenWidth(int penWidth) { m_nPenWidth = penWidth; }
 	void SetupInfo(CTrajectory* pTrajectory);

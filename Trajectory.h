@@ -52,6 +52,7 @@ public:
 	const float GetOutlyingLength() const { return m_outlyingPartitionLength; }
 	const int GetNumOutlyingPartition() const { return m_nOutlyingPartitions; }
 	const vector<CMDPoint> GetPointArray() const { return m_pointArray; }
+	const vector <CMDPoint> GetPartitionPointArray() const { return m_partitionPointArray; }
 	void AddOutlyingPartition(int index) { m_outlyingPartitionArray.push_back(index); m_nOutlyingPartitions++; }
 	pair<CMDPoint*,CMDPoint*> GetOutlyingPartition(int nth);
 //	bool DrawTrajectory(CDC* pDC);
