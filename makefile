@@ -6,10 +6,13 @@ DEPS=DistanceOutlier.h MDPoint.h Outlier.h OutlierDetector.h trajData.h Trajecto
 all: main
 
 clean:
-	rm main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o Measure.o Outlier.o main
+	-@rm *.o main convertData
     
 main: main.o Trajectory.o MDPoint.o OutlierDetector.o DistanceOutlier.o Measure.o Outlier.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+
+convertData: ConvertData.cpp csv_parser.cpp csv_parser.hpp
+	$(CC) $(CFLAGS) -o $@ ConvertData.cpp csv_parser.cpp
 
 %.o: %.cpp $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
