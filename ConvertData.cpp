@@ -8,8 +8,11 @@
 #include "csv_parser.hpp"
 #include <string>
 #include <iostream>
+#include <iomanip>
+#include <limits>
+#include <fstream>
 #include <vector>
-#include <set>
+#include <map>
 
 int main(void)
 {
@@ -17,6 +20,8 @@ int main(void)
 	//const string filename("/home/ross/csv-parser-cplusplus-read-only/examples/example_input.csv");
 	const char field_terminator = ',';
 	const char line_terminator = '\n';
+	const double m_per_lon = 85417;
+	const double m_per_lat = 111030;
 	//const char enclosure_char = '"';
 	//const char * filename = "example_input.csv";
 
@@ -40,6 +45,8 @@ int main(void)
 	double min_lat = 90;
 	double min_lon = 180;
 
+	map<int, vector<point> > points;
+
 	while(file_parser.has_more_rows()){
 		/*unsigned int i = 0;
 
@@ -56,21 +63,45 @@ int main(void)
 
 		csv_row row = file_parser.get_row();
 
-		cout << row[0] << " " << row[1] << " " << row[2] << " " << row[6];
+		//cout << row[0] << " " << row[1] << " " << row[2] << " " << row[6];
 		int id = atoi(row[0].c_str());
+		//double lat = atof(row[1].c_str());
 		double lat = atof(row[1].c_str());
+		//printf("%lf ", lat);
+		//cout << setprecision(numeric_limits<double>::digits10) << lat << " " << row[1].c_str() << "\n";
 		double lon = atof(row[2].c_str());
 		int frame = atoi(row[6].c_str());
 
 		if( lat < min_lat ) { min_lat = lat; }
 		if( lon < min_lon ) { min_lon = lon; }
 
+		point new_point;
+		new_point.id = id; new_point.lat = lat; new_point.lon = lon; new_point.frame = frame;
+
+		points[id].push_back(new_point);
 
 
-		cout << "\n";
+		//cout << "\n";
+		if(row_count % 10000 == 0){
+			cout << "Row " << row_count << "\n";
+		}
 
         row_count++;
 	}
+
+	ofstream ofile;
+	ofile.open("/home/ross/afrl_data.traj");
+	ofile << "2\n";
+	ofile << points.size() << "\n";
+
+	for( auto map_pair : points){
+		ofile << map_pair.first - 1 << " " << map_pair.second.size();
+		for( auto p : map_pair.second){
+			ofile << setprecision(numeric_limits<double>::digits10) << " " << (p.lon - min_lon) * m_per_lon << " " << (p.lat - min_lat) * m_per_lat;
+		}
+		ofile << "\n";
+	}
+	ofile.close();
 
 	return 0;
 }
