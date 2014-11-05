@@ -61,6 +61,9 @@ int main(void)
         printf("END OF ROW %02d\n", row_count);
         printf("====================================================================\n");*/
 
+		//if(points.size() > 10000)
+		//	break;
+
 		csv_row row = file_parser.get_row();
 
 		//cout << row[0] << " " << row[1] << " " << row[2] << " " << row[6];
@@ -71,6 +74,9 @@ int main(void)
 		//cout << setprecision(numeric_limits<double>::digits10) << lat << " " << row[1].c_str() << "\n";
 		double lon = atof(row[2].c_str());
 		int frame = atoi(row[6].c_str());
+
+		if(frame > 400)
+			continue;
 
 		if( lat < min_lat ) { min_lat = lat; }
 		if( lon < min_lon ) { min_lon = lon; }
@@ -89,15 +95,22 @@ int main(void)
         row_count++;
 	}
 
+	// remove short paths
+	for( auto iter = points.begin(); iter != points.end(); iter++){
+		if(iter->second.size() < 20){
+			points.erase(iter++);
+		}
+	}
+
 	ofstream ofile;
-	ofile.open("/home/ross/afrl_data.traj");
+	ofile.open("/home/ross/afrl_data.tra");
 	ofile << "2\n";
 	ofile << points.size() << "\n";
 
 	for( auto map_pair : points){
 		ofile << map_pair.first - 1 << " " << map_pair.second.size();
 		for( auto p : map_pair.second){
-			ofile << setprecision(numeric_limits<double>::digits10) << " " << (p.lon - min_lon) * m_per_lon << " " << (p.lat - min_lat) * m_per_lat;
+			ofile << " " << (p.lon - min_lon) * m_per_lon << " " << (p.lat - min_lat) * m_per_lat;
 		}
 		ofile << "\n";
 	}
