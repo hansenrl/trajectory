@@ -46,6 +46,12 @@ TrajData::~TrajData(){
 
 }
 
+/**
+ * \brief Output an eps image of the trajectories and outliers.
+ *
+ * Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions.
+ * The output file is specified with filePath, which should be an eps file.
+ */
 void TrajData::OutputTrajectoryPlot(string filePath){
 	set<int> outlier_trajectories;
 	for (COutlier* outlier_p : m_outlierList)
