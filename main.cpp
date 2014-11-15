@@ -23,7 +23,7 @@ int main () {
 
 	COutlierDetector outlierDetector(&data);
 	outlierDetector.PartitionTrajectory();
-	outlierDetector.DetectOutier();
+	outlierDetector.DetectOutlier();
 	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
 	cout << "Finished!\n";
 	data.OutputTrajectoryPlot("/home/ross/test.eps");
