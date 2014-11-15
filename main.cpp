@@ -16,45 +16,18 @@
 using namespace std;
 
 int main () {
-    // Say HelloWorld five times
-    /*for (int index = 0; index < 1; ++index)
-      cout << "HelloWorld!" << endl;
-    char input = 'i';
-    cout << "To exit, press 'm' then the 'Enter' key." << endl;
-    cin  >> input;
-    while(input != 'm') {
-        cout << "You just entered '" << input << "'. "
-             << "You need to enter 'm' to exit." << endl;
-        cin  >> input;
-    }
-    cout << "Thank you. Exiting." << endl;*/
 	TrajData data;
 	//data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane1950_2006.tra");
-	data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane2000_2006.tra");
+	//data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane2000_2006.tra");
+	data.readFile("/home/ross/afrl_data.tra");
 
 	COutlierDetector outlierDetector(&data);
 	outlierDetector.PartitionTrajectory();
-	outlierDetector.DetectOutlier();
+	outlierDetector.DetectOutier();
 	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
 	cout << "Finished!\n";
 	data.OutputTrajectoryPlot("/home/ross/test.eps");
 
-	/*
-	gp << "set term post eps color\n";
-	gp << "set output '/home/ross/test.eps'\n";
-	vector<tuple<double, double, double, double> > pts_A;
-	for(double alpha=0; alpha<1; alpha+=1.0/24.0) {
-		double theta = alpha*2.0*3.14159;
-		pts_A.push_back(make_tuple(
-			 cos(theta),
-			 sin(theta),
-			-cos(theta)*0.1,
-			-sin(theta)*0.1
-		));
-	}
-	gp << "plot '-' with vectors title 'pts_A', '-' with vectors title 'pts_B'\n";
-	gp.send1d(pts_A);
-	*/
     return 0;
 }
 
