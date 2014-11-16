@@ -9,6 +9,14 @@
 
 // CDistanceOutlier
 
+/**
+ * \brief Constructor
+ *
+ * @param [in] nTrajectories the number of trajectories in the dataset
+ * @param [in] nLineSegments the number of line segments (partitions) in the dataset
+ * @param [in] idArray an array that maps each partition (partition ID as the index of the array) to the ID of the trajectory it belongs to
+ * @param [in] distanceIndex the matrix of distances between partitions
+ */
 CDistanceOutlier::CDistanceOutlier(int nTrajectories, int nLineSegments, IntIntPairArray* idArray, FloatMatrix* distanceIndex)
 {
 	m_nTrajectories = nTrajectories;
@@ -21,6 +29,15 @@ CDistanceOutlier::~CDistanceOutlier()
 {
 }
 
+/**
+ * \brief Determines if any of the partitions are outlying or not
+ *
+ * This method is the real workhorse behind the outlier detection - it performs the actual distance comparisions to check
+ * if a partition is an outlier or not.
+ *
+ * @param [out] result flags for each partition denoting whether they are outlying or not
+ * @return Successful or not.
+ */
 bool CDistanceOutlier::DetectOutlyingLineSegment(vector<bool>* result)
 {
 	m_nNearTrajectories = (int)ceil((double)m_nTrajectories * (1.0 - (double)m_fractionParam));
@@ -34,13 +51,6 @@ bool CDistanceOutlier::DetectOutlyingLineSegment(vector<bool>* result)
 
 	for (int i = 0; i < m_nLineSegments; i++)
 	{
-#ifdef __VISUALIZE_DEBUG_INFO__
-		GetLineSegmentPoint(i, &m_document->m_currStartPoint, &m_document->m_currEndPoint);
-		m_document->m_lineSegmentDensity = m_densityArray[i];
-		m_document->m_nCloseLineSegments = 0;
-		m_document->m_startPointArray.RemoveAll();
-		m_document->m_endPointArray.RemoveAll();
-#endif
 
 #ifdef __INCORPORATE_DENSITY__
 		if ((int)ceil(GetNumOfNearTrajectories(i) * m_densityArray[i]) <= m_nNearTrajectories)
@@ -50,11 +60,6 @@ bool CDistanceOutlier::DetectOutlyingLineSegment(vector<bool>* result)
 			result->SetAt(i, true);
 		else
 			result->SetAt(i, false);
-
-#ifdef __VISUALIZE_DEBUG_INFO__
-		m_document->UpdateAllViews(NULL);
-		AfxMessageBox(TEXT("Check the outlierness"));
-#endif	
 	}
 #else	/* #ifndef __PARTITION_PRUNING_OPTIMIZATION__ */
 	int nCloseTrajectories;
@@ -97,30 +102,18 @@ bool CDistanceOutlier::DetectOutlyingLineSegment(vector<bool>* result)
 		else
 			(*result)[currIndex] = false;
 
-#ifdef __VISUALIZE_DEBUG_INFO__
-		GetLineSegmentPoint(iter->first.first, iter->first.second, &m_document->m_currStartPoint, &m_document->m_currEndPoint);
-		m_document->m_lineSegmentDensity = m_densityArray[(*m_coarsePartitionIdMap)[iter->first]];
-		m_document->m_nCloseTrajectories = nCloseTrajectories;
-		m_document->m_nCloseLineSegments = nClosePartitions;
-		m_document->m_startPointArray.RemoveAll();
-		m_document->m_endPointArray.RemoveAll();
-		for (int i = 0; i < nClosePartitions; i++)
-		{
-			CPoint startPoint, endPoint;
-			IntIntPair partition = (m_closePartitionArray->GetAt(currIndex)).GetAt(i);
-			GetLineSegmentPoint(partition.first, partition.second, &startPoint, &endPoint);
-			m_document->m_startPointArray.Add(startPoint);
-			m_document->m_endPointArray.Add(endPoint);
-		}
-		m_document->UpdateAllViews(NULL);
-		AfxMessageBox(TEXT("Check the outlierness"));
-#endif
 	}
 #endif	/* #ifndef __PARTITION_PRUNING_OPTIMIZATION__ */
 
 	return true;
 }
 
+/**
+ * \brief Returns the number of trajectories that are close to the line segment
+ *
+ * @param [in] index the ID of the line segment (partition)
+ * @return the number of close trajectories
+ */
 int CDistanceOutlier::GetNumOfNearTrajectories(int index)
 {
 	int currTrajectoryId = (*m_idArray)[index].first;
@@ -134,13 +127,16 @@ int CDistanceOutlier::GetNumOfNearTrajectories(int index)
 		if (IsTrajectoryNear(index, trajectoryId))
 			nNearTrajectories++;
 
-#ifdef __VISUALIZE_DEBUG_INFO__
-	m_document->m_nCloseTrajectories = nNearTrajectories;
-#endif
-
 	return nNearTrajectories;
 }
 
+/**
+ * \brief Returns whether a trajectory is near a line segment (partition)
+ *
+ * @param [in] lineSegmentId the ID of the partition
+ * @param [in] trajectoryId the ID of the trajectory
+ * @return true if the trajectory and partition are close, false if they are not
+ */
 bool CDistanceOutlier::IsTrajectoryNear(int lineSegmentId, int trajectoryId)
 {
 	int startLineSegmentId = m_trajectoryRange[trajectoryId].first;

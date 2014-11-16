@@ -18,7 +18,10 @@ typedef pair<CMDPoint*,CMDPoint*> PointPointPair;
 typedef vector<float> FloatArray;
 
 /**
- * \brief A class to perform the outlier detection
+ * \brief A high-level class to perform the outlier detection
+ *
+ * Mainly does management of the outlier detection (prunining of partitions for optimization, flagging trajectories as outliers, etc.)
+ * Much of the actual computation for outlier detection occurs in CDistanceOutlier.
  */
 class COutlierDetector
 {
@@ -32,7 +35,7 @@ private:
 	int m_nTotalLineSegments;
 	vector<IntIntPair> m_idArray;
 	vector<PointPointPair> m_lineSegmentArray;
-	vector<FloatArray> m_distanceIndex;
+	vector<FloatArray> m_distanceIndex; // an array of the distances between partitions
 	FloatArray m_lengthArray;
 	vector<PartitionInfo*> m_partitionInfoArray;
 	// programming trick: avoid frequent execution of the new and delete operations
