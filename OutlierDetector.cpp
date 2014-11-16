@@ -1,7 +1,7 @@
 // OutlierDetector.cpp : implementation file
 //
 
-#include "trajData.h"
+#include "TrajData.h"
 #include "OutlierDetector.h"
 #include "DistanceOutlier.h"
 #include "Param.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 //#include "TraOutlierDoc.h"
-#include "trajData.h"
+#include "TrajData.h"
 #include "Trajectory.h"
 #include "Outlier.h"
 

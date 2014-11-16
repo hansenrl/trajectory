@@ -1,5 +1,5 @@
 /*
- * trajData.h
+ * TrajData.h
  *
  *  Created on: Oct 16, 2014
  *      Author: ross

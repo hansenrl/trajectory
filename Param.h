@@ -20,7 +20,7 @@
 // This header file contains all the tuning parameters for the outlier detection algorithm
 
 const float g_FRACTION_PARAMETER = (float)0.95;
-const float g_DISTANCE_PARAMETER = (float)20.0; // (float)80.0;
+const float g_DISTANCE_PARAMETER = (float)82.0; // (float)80.0;
 const float g_MINIMUM_OUTLYING_PROPORTION = (float)0.50; // (float)0.10;
 
 const int MDL_COST_ADVANTAGE = 20;

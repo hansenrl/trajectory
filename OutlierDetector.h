@@ -1,6 +1,6 @@
 #pragma once
 
-#include "trajData.h"
+#include "TrajData.h"
 #include "Trajectory.h"
 #include "Outlier.h"
 #include "Param.h"
