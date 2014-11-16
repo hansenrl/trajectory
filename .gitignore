@@ -1,7 +1,6 @@
 *.o
 main
 convertData
-html/
 latex/
 .cproject
 .project
