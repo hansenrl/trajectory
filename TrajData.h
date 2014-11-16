@@ -13,6 +13,12 @@
 #include "Outlier.h"
 #include "Trajectory.h"
 
+/**
+ * \brief The main class, and handler for all of the trajectory data
+ *
+ * The main purpose of this class is to hold the trajectory data. Contains functions to read in trajectory data and output
+ * images. After outlier detection is run this class also holds information on the outlying trajectories and outlying partitions.
+ */
 class TrajData
 {
 public:
@@ -33,25 +39,6 @@ public:
 
 	bool readFile(string);
 	void OutputTrajectoryPlot(string);
-// DEBUG ...
-#ifdef __VISUALIZE_DEBUG_INFO__
-	float m_lineSegmentDensity;
-	int m_nCloseTrajectories;
-	int m_nCloseLineSegments;
-	CPoint m_currStartPoint;
-	CPoint m_currEndPoint;
-	CArray<CPoint,CPoint> m_startPointArray;
-	CArray<CPoint,CPoint> m_endPointArray;
-#endif
-// ... DEBUG
-
-// Implementation
-public:
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
 };
 
 

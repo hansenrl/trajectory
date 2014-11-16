@@ -19,6 +19,9 @@
 #include "Param.h"
 #include "gnuplot-iostream.h"
 
+/**
+ * \brief Default constructor.
+ */
 TrajData::TrajData(){
 	m_nTrajectories = 0;
 	m_nOutliers = 0;
