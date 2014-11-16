@@ -17,6 +17,9 @@ typedef pair<int,int> IntIntPair;
 typedef pair<CMDPoint*,CMDPoint*> PointPointPair;
 typedef vector<float> FloatArray;
 
+/**
+ * \brief A class to perform the outlier detection
+ */
 class COutlierDetector
 {
 public:

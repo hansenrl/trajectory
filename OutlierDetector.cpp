@@ -13,10 +13,16 @@
 
 // COutlierDetector
 
+/**
+ * \brief Default constructor
+ */
 COutlierDetector::COutlierDetector()
 {
 }
 
+/**
+ * \brief Constructor that accepts data
+ */
 COutlierDetector::COutlierDetector(TrajData* data)
 {
 	m_data = data;
@@ -29,6 +35,13 @@ COutlierDetector::~COutlierDetector()
 
 // COutlierDetector member functions
 
+/**
+ * \brief Resets the outlier detector object
+ *
+ * Clears all of the internal arrays and resets the counters. Does not clear the trajectory data.
+ *
+ * @return Successful or not
+ */
 bool COutlierDetector::ResetOutlierDetector()
 {
 	vector<CTrajectory*>& trajectoryList = m_data->m_trajectoryList;
@@ -61,6 +74,11 @@ bool COutlierDetector::ResetOutlierDetector()
 	return true;
 }
 
+/**
+ * \brief Partitions the trajectories in the data
+ *
+ * Consults parameter __USE_CONVENTIONAL_PARTITONING__ to determine whether or not to use two-level partitioning scheme
+ */
 bool COutlierDetector::PartitionTrajectory()
 {
 #ifdef __USE_CONVENTIONAL_PARTITONING__
@@ -81,6 +99,12 @@ bool COutlierDetector::PartitionTrajectory()
 	return true;
 }
 
+/**
+ * \brief Finds optimal partitioning of a trajectory
+ *
+ * Consults __PARTITION_PRUNING_OPTIMIZATION__ to determine if the optimizations to the two-level partitioning should be used.
+ * @param [in] pTrajectory the trajectory to partition
+ */
 bool COutlierDetector::FindOptimalPartition(CTrajectory* pTrajectory)
 {
 	int nPoints = pTrajectory->m_nPoints;
@@ -146,6 +170,9 @@ bool COutlierDetector::FindOptimalPartition(CTrajectory* pTrajectory)
 	return true;
 }
 
+/**
+ * \brief Saves the trajectory partitioning and precomputes some calculations (such as distances)
+ */
 bool COutlierDetector::StoreTrajectoryPartitionIntoIndex()
 {
 	int nDimensions = m_data->m_nDimensions;
@@ -502,10 +529,18 @@ m_data->m_trajectoryList;
 	return true;
 }
 
+/**
+ * \brief Finds outliers and stores them in the data member
+ *
+ * Finds outliers in the data that is contained in the m_data field of the object.
+ * The outlying trajectories are stored in the m_outlierList member of the supplied data.
+ *
+ * @return Successful or not.
+ */
 bool COutlierDetector::DetectOutlier()
 {
 	CDistanceOutlier distanceOutlier(m_data->m_nTrajectories, m_nTotalLineSegments, &m_idArray, &m_distanceIndex);
-	distanceOutlier.m_data = m_data;	// pass the pointer of the document
+	distanceOutlier.m_data = m_data;	// pass the pointer of the data
 
 	// setup two parameters: p (i.e., fraction) and D (i.e., distance)
 	distanceOutlier.SetFractionParameter(m_data->m_paramFraction);
@@ -602,6 +637,9 @@ bool COutlierDetector::DetectOutlier()
 	return true;
 }
 
+/**
+ * \brief Checks if the trajectory contains a significant portion of outlying partitions
+ */
 bool COutlierDetector::CheckOutlyingProportion(CTrajectory* pTrajectory, float minProportion)
 {
 	CMDPoint* startPoint;
@@ -634,6 +672,11 @@ bool COutlierDetector::CheckOutlyingProportion(CTrajectory* pTrajectory, float m
 		return false;
 }
 
+/**
+ * \brief Marks the given trajectory as an outlier in the data member
+ *
+ * @return Successful or not.
+ */
 bool COutlierDetector::GenerateAndSetupOutlier(CTrajectory* pTrajectory, int outlierId)
 {
 	COutlier* pOutlierItem = new COutlier(outlierId, pTrajectory->GetId(), m_data->m_nDimensions);

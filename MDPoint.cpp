@@ -7,6 +7,11 @@
 
 // CMDPoint
 
+/**
+ * \brief Default constructor
+ *
+ * Constructs a point with dimension 2 and both dimension values equal to 0.0.
+ */
 CMDPoint::CMDPoint()
 {
 	m_nDimensions = 2;
@@ -14,6 +19,11 @@ CMDPoint::CMDPoint()
 	m_coordinate[0] = m_coordinate[1] = 0.0;
 }
 
+/**
+ * \brief Constructor for a point with custom dimension
+ *
+ * @param [in] nDimensions the number of dimensions the point exists in
+ */
 CMDPoint::CMDPoint(int nDimensions)
 {
 	m_nDimensions = nDimensions;
@@ -24,6 +34,3 @@ CMDPoint::CMDPoint(int nDimensions)
 CMDPoint::~CMDPoint()
 {
 }
-
-
-// CMDPoint member functions
