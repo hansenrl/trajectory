@@ -10,6 +10,9 @@ using namespace std;
 
 
 // this structure contains the information required to derive the lower and upper bounds
+/**
+ * \brief Information required to derive the lower and upper bounds for optimized partition pruning
+ */
 typedef struct PartitionInfo {
 	float maxPerpDist;
 	float minLength;
