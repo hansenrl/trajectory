@@ -1,13 +1,16 @@
 // Trajectory.cpp : implementation file
 //
 
-//#include "stdafx.h"
 #include "TraOutlier.h"
 #include "Trajectory.h"
 
-
 // CTrajectory
 
+/**
+ * \brief Default constructor
+ *
+ * Sets the trajectory ID to -1 and the number of dimensions to 2.
+ */
 CTrajectory::CTrajectory()
 {
 	m_trajectoryId = -1;
@@ -21,6 +24,12 @@ CTrajectory::CTrajectory()
 	m_containOutlier = false;
 }
 
+/**
+ * \brief Constructor with id and dimension parameters
+ *
+ * @param [in] id the trajectory ID
+ * @param [in] nDimensions the number of dimensions for the points in the trajectory (typically 2)
+ */
 CTrajectory::CTrajectory(int id, int nDimensions)
 {
 	m_trajectoryId = id;
@@ -43,6 +52,12 @@ CTrajectory::~CTrajectory()
 
 // CTrajectory member functions
 
+/**
+ * \brief Get the nth outlying partition in this trajectory
+ *
+ * @param [in] nth Which outlying partition of the trajectory to return
+ * @return A pair of CMDPoint pointers which define the start and end points of the partition segment
+ */
 pair<CMDPoint*, CMDPoint*> CTrajectory::GetOutlyingPartition(int nth)
 {
 	int index = m_outlyingPartitionArray[nth];
@@ -58,68 +73,3 @@ pair<CMDPoint*, CMDPoint*> CTrajectory::GetOutlyingPartition(int nth)
 
 	return lineSegment;
 }
-/*
-BOOL CTrajectory::DrawTrajectory(CDC* pDC)
-{
-	if (m_nDimensions > 2)
-	{
-        AfxMessageBox(TEXT("Unable to visualize high-dimensional data"));
-        return FALSE;
-	}
-
-	CPen penTrajectory1, penTrajectory2;
-	if (!penTrajectory1.CreatePen(PS_SOLID, m_nPenWidth, RGB(0,255,0)))	// green color
-		return FALSE;
-	if (!penTrajectory2.CreatePen(PS_SOLID, m_nPenWidth, RGB(255,0,0)))	// hot pink: RGB(255,105,180)
-		return FALSE;
-	CPen* pOldPen = pDC->SelectObject(&penTrajectory1);
-
-	CPoint point;
-	point.SetPoint((int)(m_pointArray[0].GetCoordinate(0)), (int)(m_pointArray[0].GetCoordinate(1)));
-	pDC->MoveTo(point);
-	for (int i = 1; i < m_pointArray.GetSize(); i++)
-	{
-		if (!m_containOutlier) pDC->SelectObject(&penTrajectory1);
-		else pDC->SelectObject(&penTrajectory2);
-		point.SetPoint((int)(m_pointArray[i].GetCoordinate(0)), (int)(m_pointArray[i].GetCoordinate(1)));
-		pDC->LineTo(point);
-	}
-
-	pDC->SelectObject(pOldPen);
-	return TRUE;
-}
-*/
-#ifdef __SHOW_TRAJECTORY_PARTITION__
-BOOL CTrajectory::DrawSimplifiedTrajectory(CDC* pDC)
-{
-	if (m_nDimensions > 2)
-	{
-        AfxMessageBox(TEXT("Unable to visualize high-dimensional data"));
-        return FALSE;
-	}
-
-	// if partitioning has not been done yet
-	if (m_nPartitionPoints == 0) return TRUE;
-
-	CPen penTrajectory1, penTrajectory2;
-	if (!penTrajectory1.CreatePen(PS_DOT, m_nPenWidth, RGB(160,32,240)))	// purple
-		return FALSE;
-	if (!penTrajectory2.CreatePen(PS_DOT, m_nPenWidth, RGB(0,0,255)))	// blue color
-		return FALSE;
-	CPen* pOldPen = pDC->SelectObject(&penTrajectory1);
-
-	CPoint point;
-	point.SetPoint((int)(m_partitionPointArray[0].GetCoordinate(0)), (int)(m_partitionPointArray[0].GetCoordinate(1)));
-	pDC->MoveTo(point);
-	for (int i = 1; i < m_partitionPointArray.GetSize(); i++)
-	{
-		if (i % 2 == 0) pDC->SelectObject(&penTrajectory1);
-		else pDC->SelectObject(&penTrajectory2);
-		point.SetPoint((int)(m_partitionPointArray[i].GetCoordinate(0)), (int)(m_partitionPointArray[i].GetCoordinate(1)));
-		pDC->LineTo(point);
-	}
-
-	pDC->SelectObject(pOldPen);
-	return TRUE;
-}
-#endif	// __SHOW_TRAJECTORY_PARTITION__

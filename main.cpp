@@ -51,6 +51,8 @@ TrajData::~TrajData(){
  *
  * Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions.
  * The output file is specified with filePath, which should be an eps file.
+ *
+ * @param filePath [in] The desired path of the .eps file to output
  */
 void TrajData::OutputTrajectoryPlot(string filePath){
 	set<int> outlier_trajectories;
@@ -116,6 +118,13 @@ void TrajData::OutputTrajectoryPlot(string filePath){
 	}
 }
 
+/**
+ * \brief Read trajectories from an input .traj file
+ *
+ *
+ * @param[in] filePath The path to the input .traj file
+ * @return True if read is successful
+ */
 bool TrajData::readFile(string filePath)
 {
 	int nDimensions = 2;		// default dimension = 2
