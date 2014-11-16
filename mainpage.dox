@@ -1,0 +1,25 @@
+/**
+\mainpage Trajectory Outlier Detection
+
+Introduction
+===
+
+This is a library for trajectory outlier detection that uses the algorithm presented by 
+Jae-Gil Lee and others in their paper [Trajectory Outlier Detection: A Partition-and-Detect Framework][1] \[1\].
+
+
+This code is based heavily on the source code made available on Jae-Gil Lee's [webpage][2]. The code on
+on his website is a complete implementation of their algorithm, but like any good research prototype
+includes little documentation. Additionally, it was written with Microsoft Visual Studio - 
+it uses Windows-specific visualization and proprietary Microsoft C++ structures. 
+Therefore, the goal of this project was to take that implementation and rewrite it to be a cross-platform library.
+
+![Alt Image](../example.png)
+
+[1]: http://dm.kaist.ac.kr/jaegil/papers/icde08.pdf "Trajectory Outlier Detection Paper"
+[2]: http://dm.kaist.ac.kr/jaegil/ "Source Code"
+<sub>\[1\] Jae-Gil Lee, Jiawei Han, and Xiaolei Li. 2008. Trajectory Outlier Detection: 
+A Partition-and-Detect Framework. In Proceedings of the 2008 IEEE 24th International 
+Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC, USA, 140-149.</sub>
+
+*/

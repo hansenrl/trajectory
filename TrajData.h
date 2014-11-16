@@ -24,21 +24,24 @@ class TrajData
 public:
 	TrajData();
 	~TrajData();
-	std::string m_inputFilePath;
-	int m_nDimensions;
-	int m_nTrajectories;
-	int m_nOutliers;
-	int m_nOutlyingPartitions;
-	int m_maxNPoints;
-	std::vector<CTrajectory*> m_trajectoryList;
-	std::list<COutlier*> m_outlierList;
-	float m_paramFraction;
-	float m_paramDistance;
-	int m_nLineSegments;
-	int m_nTrajectoryPartitions;
+	std::string m_inputFilePath; ///< The path of the input file
+	int m_nDimensions; ///< The dimensionality of the dataset (typically 2)
+	int m_nTrajectories; ///< The number of trajectories in the dataset
+	int m_nOutliers; ///< The number of outliers found
+	int m_nOutlyingPartitions; ///< The outlying partitions found
+
+	std::vector<CTrajectory*> m_trajectoryList; ///< The list of trajectories
+	std::list<COutlier*> m_outlierList; ///< The list of outliers
+	float m_paramFraction; ///< The parameter p (fraction of trajectories that must be not close to be an outlier)
+	float m_paramDistance; ///< The distance parameter D
+	int m_nLineSegments; ///< The number of line segments in the original data
+	int m_nTrajectoryPartitions; ///< The number of trajectory partitions
 
 	bool readFile(string);
 	void OutputTrajectoryPlot(string);
+
+private:
+	int m_maxNPoints; ///< The maximum number of points to read in
 };
 
 
