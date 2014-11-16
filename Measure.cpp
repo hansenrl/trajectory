@@ -9,6 +9,14 @@
 
 #define LOG2(_x)	(float)(log((float)(_x)) / log((float)2))
 
+/**
+ * \brief Measures the model cost of using a partition to represent part of a trajectory
+ *
+ * In the MDL description of the paper this is known as L(H). It is the length of the partition.
+ * @param [in] pTrajectory the trajectory that is being partitioned
+ * @param [in] startPIndex the index of the staring point of the partition
+ * @param [in] endPIndex the index of the ending point of the partition
+ */
 int COutlierDetector::ComputeModelCost(CTrajectory* pTrajectory, int startPIndex, int endPIndex)
 {
 	CMDPoint* partitionStart = &(pTrajectory->m_pointArray[startPIndex]);
@@ -20,6 +28,15 @@ int COutlierDetector::ComputeModelCost(CTrajectory* pTrajectory, int startPIndex
 	return (int)ceil(LOG2(distance));
 }
 
+/**
+ * \brief Measures the encoding cost of using a partition to represent part of a trajectory
+ *
+ * In the MDL description of the paper this is known as L(D|H). It is the distance between the original trajectory
+ * and the partition representation.
+ * @param [in] pTrajectory the trajectory that is being partitioned
+ * @param [in] startPIndex the index of the staring point of the partition
+ * @param [in] endPIndex the index of the ending point of the partition
+ */
 int COutlierDetector::ComputeEncodingCost(CTrajectory* pTrajectory, int startPIndex, int endPIndex)
 {
 	CMDPoint* partitionStart;
@@ -49,6 +66,9 @@ int COutlierDetector::ComputeEncodingCost(CTrajectory* pTrajectory, int startPIn
 	return encodingCost;
 }
 
+/**
+ * \brief Measures the perpendicular distance between two line segments (see paper for definition of perpendicular distance)
+ */
 float COutlierDetector::MeasurePerpendicularDistance(CMDPoint* s1, CMDPoint* e1, CMDPoint* s2, CMDPoint* e2)
 {
 	// we assume that the first line segment is longer than the second one
@@ -70,6 +90,9 @@ float COutlierDetector::MeasurePerpendicularDistance(CMDPoint* s1, CMDPoint* e1,
 	return ((pow(distance1, 2) + pow(distance2, 2)) / (distance1 + distance2));
 }
 
+/**
+ * \brief Measures the distance between a point and a line segment
+ */
 float COutlierDetector::MeasureDistanceFromPointToLineSegment(CMDPoint* s, CMDPoint* e, CMDPoint* p)
 {
 	int nDimensions = p->GetNDimensions();
@@ -98,6 +121,9 @@ float COutlierDetector::MeasureDistanceFromPointToLineSegment(CMDPoint* s, CMDPo
 	return MeasureDistanceFromPointToPoint(p, &m_projectionPoint);
 }
 
+/**
+ * \brief Measures the distance between two points
+ */
 float COutlierDetector::MeasureDistanceFromPointToPoint(CMDPoint* point1, CMDPoint* point2)
 {
 	int nDimensions = point1->GetNDimensions();
@@ -109,6 +135,9 @@ float COutlierDetector::MeasureDistanceFromPointToPoint(CMDPoint* point1, CMDPoi
 	return sqrt(squareSum);
 }
 
+/**
+ * \brief Computes the length of a vector
+ */
 float COutlierDetector::ComputeVectorLength(CMDPoint* vector)
 {
 	int nDimensions = vector->GetNDimensions();
@@ -120,6 +149,9 @@ float COutlierDetector::ComputeVectorLength(CMDPoint* vector)
 	return sqrt(squareSum);
 }
 
+/**
+ * \brief Computes the inner product between two vectors
+ */
 float COutlierDetector::ComputeInnerProduct(CMDPoint* vector1, CMDPoint* vector2)
 {
 	int nDimensions = vector1->GetNDimensions();
@@ -131,6 +163,9 @@ float COutlierDetector::ComputeInnerProduct(CMDPoint* vector1, CMDPoint* vector2
 	return innerProduct;
 }
 
+/**
+ * \brief Measures the angle distance between two line segments (see paper for definition of angle distance)
+ */
 float COutlierDetector::MeasureAngleDisntance(CMDPoint* s1, CMDPoint* e1, CMDPoint* s2, CMDPoint* e2)
 {
 	int nDimensions = s1->GetNDimensions();
@@ -181,7 +216,9 @@ float COutlierDetector::MeasureAngleDisntance(CMDPoint* s1, CMDPoint* e1, CMDPoi
 	return (vectorLength2 * sinTheta);
 }
 
-
+/**
+ * \brief Computes the weighted distance between two line segments from component distances (see paper for definition of distance)
+ */
 float COutlierDetector::ComputeDistanceBetweenTwoLineSegments(CMDPoint* startPoint1, CMDPoint* endPoint1, CMDPoint* startPoint2, CMDPoint* endPoint2)
 {
 	float perpendicularDistance, parallelDistance, angleDistance;
@@ -192,7 +229,9 @@ float COutlierDetector::ComputeDistanceBetweenTwoLineSegments(CMDPoint* startPoi
 	return WEIGHTED_DISTANCE(perpendicularDistance, parallelDistance, angleDistance);
 }
 
-
+/**
+ * \brief Measures the perpendicular distance between two line segments (see paper for definition of perpendicular distance) and stores the result in distanceVector
+ */
 void COutlierDetector::ComputeDistanceBetweenTwoLineSegments(CMDPoint* startPoint1, CMDPoint* endPoint1, CMDPoint* startPoint2, CMDPoint* endPoint2, float* distanceVector)
 {
 	float perpendicularDistance, parallelDistance, angleDistance;
@@ -204,7 +243,9 @@ void COutlierDetector::ComputeDistanceBetweenTwoLineSegments(CMDPoint* startPoin
 	distanceVector[2] = angleDistance;
 }
 
-
+/**
+ * \brief Measures component distances and stores them in the variables perpendicularDistance, parallelDistance, and angleDistance
+ */
 void COutlierDetector::SubComputeDistanceBetweenTwoLineSegments(CMDPoint* startPoint1, CMDPoint* endPoint1, CMDPoint* startPoint2, CMDPoint* endPoint2, float& perpendicularDistance, float& parallelDistance, float& angleDistance)
 {
 	float perDistance1, perDistance2;
