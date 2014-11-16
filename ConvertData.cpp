@@ -1,6 +1,9 @@
 /*
  * ConvertData.cpp
  *
+ * Converts data in the format of the WPAFB 2009 dataset to the .traj format expected by TrajData
+ * See https://www.sdms.afrl.af.mil/index.php?collection=wpafb2009 for details about the WPAFB 2009 dataset
+ *
  *  Created on: Oct 31, 2014
  *      Author: ross
  */
@@ -22,14 +25,11 @@ int main(void)
 	const char line_terminator = '\n';
 	const double m_per_lon = 85417;
 	const double m_per_lat = 111030;
-	//const char enclosure_char = '"';
-	//const char * filename = "example_input.csv";
 
 	csv_parser file_parser;
 
 	file_parser.set_skip_lines(1);
 	file_parser.init(filename.c_str());
-	//file_parser.set_enclosed_char(enclosure_char, ENCLOSURE_OPTIONAL);
 	file_parser.set_field_term_char(field_terminator);
 	file_parser.set_line_term_char(line_terminator);
 

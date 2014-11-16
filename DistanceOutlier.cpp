@@ -1,7 +1,7 @@
 // DistanceOutlier.cpp : implementation file
 //
 
-#include "TraOutlier.h"
+#include "Param.h"
 #include "DistanceOutlier.h"
 #include <fstream>
 #include <math.h>

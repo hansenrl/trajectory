@@ -1,7 +1,7 @@
 // Outlier.cpp : implementation file
 //
 
-#include "TraOutlier.h"
+#include "Param.h"
 #include "Outlier.h"
 
 

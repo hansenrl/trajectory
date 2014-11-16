@@ -1,8 +1,8 @@
 // Trajectory.cpp : implementation file
 //
 
-#include "TraOutlier.h"
 #include "Trajectory.h"
+#include "Param.h"
 
 // CTrajectory
 

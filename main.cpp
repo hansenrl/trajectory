@@ -13,6 +13,7 @@ int main () {
 	//data.readFile("/home/ross/afrl_data.tra");
 
 	COutlierDetector outlierDetector(&data);
+	// set fraction distance?
 	outlierDetector.PartitionTrajectory();
 	outlierDetector.DetectOutlier();
 	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
