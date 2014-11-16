@@ -1,13 +1,15 @@
 // Outlier.cpp : implementation file
 //
 
-//#include "stdafx.h"
 #include "TraOutlier.h"
 #include "Outlier.h"
 
 
 // COutlier
 
+/**
+ * \brief Constructor for 2-dimensional data, sets the outlier and trajectory IDs to -1
+ */
 COutlier::COutlier()
 {
 	m_outlierId = -1;
@@ -18,6 +20,13 @@ COutlier::COutlier()
 	m_nPenWidth = 3;
 }
 
+/**
+ * \brief Constructor
+ *
+ * @param [in] id outlier ID
+ * @param [in] trajectoryId trajectory ID
+ * @param [in] nDimensions the number of dimensions in the data
+ */
 COutlier::COutlier(int id, int trajectoryId, int nDimensions)
 {
 	m_outlierId = id;
@@ -35,7 +44,11 @@ COutlier::~COutlier()
 
 
 // COutlier member functions
-
+/**
+ * \brief Pulls the relevant information from the trajectory into this outlier object
+ *
+ * @param [in] pTrajectory the trajectory object for the outlier
+ */
 void COutlier::SetupInfo(CTrajectory* pTrajectory)
 {
 	// setup the number of outlying trajectory partitions
@@ -61,30 +74,3 @@ void COutlier::SetupInfo(CTrajectory* pTrajectory)
 
 	return;
 }
-/*
-BOOL COutlier::DrawOutlier(CDC* pDC)
-{
-	if (m_nDimensions > 2)
-	{
-        AfxMessageBox(TEXT("Unable to visualize high-dimensional data"));
-        return FALSE;
-	}
-
-	CPen penOutlier;
-	if (!penOutlier.CreatePen(PS_SOLID, m_nPenWidth, RGB(255,0,0)))		// red color
-		return FALSE;
-	CPen* pOldPen = pDC->SelectObject(&penOutlier);
-
-	CPoint startPoint, endPoint;
-	for (int i = 0; i < m_nOutlyingPartitions; i++)
-	{
-		startPoint.SetPoint((int)(m_outlyingPartitionArray[i].first.GetCoordinate(0)), (int)(m_outlyingPartitionArray[i].first.GetCoordinate(1)));
-		endPoint.SetPoint((int)(m_outlyingPartitionArray[i].second.GetCoordinate(0)), (int)(m_outlyingPartitionArray[i].second.GetCoordinate(1)));
-		pDC->MoveTo(startPoint);
-		pDC->LineTo(endPoint);
-	}
-
-	pDC->SelectObject(pOldPen);
-	return TRUE;
-}
-*/
