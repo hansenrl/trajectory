@@ -2,10 +2,7 @@
 #include <fstream>
 #include <string>
 #include "TrajData.h"
-#include "MDPoint.h"
-#include "Trajectory.h"
 #include "OutlierDetector.h"
-#include "Param.h"
 
 using namespace std;
 
