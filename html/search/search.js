@@ -11,7 +11,7 @@ var indexSectionsWithContent =
   1: "cpt",
   2: "acdfgimoprst",
   3: "m",
-  4: "t"
+  4: "rt"
 };
 
 var indexSectionNames =

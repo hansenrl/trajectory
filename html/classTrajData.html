@@ -37,6 +37,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -99,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adc3a2e5088c8babe13199ba1fcb4b86f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adc3a2e5088c8babe13199ba1fcb4b86f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajData.html#adc3a2e5088c8babe13199ba1fcb4b86f">TrajData</a> ()</td></tr>
-<tr class="memdesc:adc3a2e5088c8babe13199ba1fcb4b86f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br/></td></tr>
+<tr class="memdesc:adc3a2e5088c8babe13199ba1fcb4b86f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Uses the fraction parameter p and the distance parameter D specified in params.h. <br/></td></tr>
 <tr class="separator:adc3a2e5088c8babe13199ba1fcb4b86f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a117d352f601f1442ab61f10c57ede697"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajData.html#a117d352f601f1442ab61f10c57ede697">readFile</a> (string)</td></tr>
 <tr class="memdesc:a117d352f601f1442ab61f10c57ede697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read trajectories from an input .traj file.  <a href="#a117d352f601f1442ab61f10c57ede697">More...</a><br/></td></tr>
@@ -107,6 +108,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8146600445d6bac71bd00142df1d5bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajData.html#a8146600445d6bac71bd00142df1d5bbb">OutputTrajectoryPlot</a> (string)</td></tr>
 <tr class="memdesc:a8146600445d6bac71bd00142df1d5bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output an eps image of the trajectories and outliers.  <a href="#a8146600445d6bac71bd00142df1d5bbb">More...</a><br/></td></tr>
 <tr class="separator:a8146600445d6bac71bd00142df1d5bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adde8e73cca32ee868c0fb58a88bc6404"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajData.html#adde8e73cca32ee868c0fb58a88bc6404">OutputTrajectoryPlotPNG</a> (string filePath)</td></tr>
+<tr class="memdesc:adde8e73cca32ee868c0fb58a88bc6404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a png image of the trajectories and outliers.  <a href="#adde8e73cca32ee868c0fb58a88bc6404">More...</a><br/></td></tr>
+<tr class="separator:adde8e73cca32ee868c0fb58a88bc6404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad31a2e80d410cae85d458368b5c923f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrajData.html#ad31a2e80d410cae85d458368b5c923f7">OutputTrajectoryPlot</a> (string filePath, string termSettings, string oTrajColor, int oTrajWidth, string oPartColor, int oPartWidth)</td></tr>
+<tr class="memdesc:ad31a2e80d410cae85d458368b5c923f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output an eps image of the trajectories and outliers.  <a href="#ad31a2e80d410cae85d458368b5c923f7">More...</a><br/></td></tr>
+<tr class="separator:ad31a2e80d410cae85d458368b5c923f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -181,10 +188,101 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div><div class="memdoc">
 
 <p>Output an eps image of the trajectories and outliers. </p>
+<p>Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions. Uses default coloring and line widths: outlier trajectories colored red, line widths 2, and outlier partitions in a line width of 6.</p>
+<p>The output file is specified with filePath, which should be an .eps file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>[in] The desired path and filename of the eps file to output </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ad31a2e80d410cae85d458368b5c923f7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TrajData::OutputTrajectoryPlot </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>filePath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>termSettings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>oTrajColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oTrajWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>oPartColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oPartWidth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Output an eps image of the trajectories and outliers. </p>
 <p>Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions. The output file is specified with filePath, which should be an eps file.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">filePath</td><td>[in] The desired path of the .eps file to output </td></tr>
+    <tr><td class="paramname">filePath</td><td>[in] The desired path and filename of the eps file to output </td></tr>
+    <tr><td class="paramname">termSettings</td><td>[in] the terminal settings passed to gnuplot to specify the output type and style. For example, for eps files specify "post eps", for png output specify "pngcairo", etc. Options can be specified afterward, such as "post eps color". </td></tr>
+    <tr><td class="paramname">oTrajColor</td><td>[in] The color for outlying trajectories </td></tr>
+    <tr><td class="paramname">oTrajWidth</td><td>[in] The line width for outlying trajectories </td></tr>
+    <tr><td class="paramname">oPartColor</td><td>[in] The color for outlying partitions </td></tr>
+    <tr><td class="paramname">oPartWidth</td><td>[in] The line width for outlying partitions </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="adde8e73cca32ee868c0fb58a88bc6404"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TrajData::OutputTrajectoryPlotPNG </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Output a png image of the trajectories and outliers. </p>
+<p>Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions. Uses default coloring and line widths: outlier trajectories colored red, line widths 2, and outlier partitions in a line width of 6.</p>
+<p>The output file is specified with filePath, which should be an .png file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>[in] The desired path and filename of the png file to output </td></tr>
   </table>
   </dd>
 </dl>
@@ -223,7 +321,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Nov 16 2014 20:26:31 for Trajectory Outlier Detection Library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Nov 16 2014 22:18:49 for Trajectory Outlier Detection Library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
