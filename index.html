@@ -39,25 +39,79 @@
         <ul></ul>
       </nav>
       <section>
-        <h1>
-<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
+        <h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>This is an open-source library to find outlier trajectories in a dataset. This library is based on the work of <a href="http://dm.kaist.ac.kr/jaegil/">Jae-Gil Lee</a> and others.</p>
+
+<h2>
+<a id="what-are-trajectories" class="anchor" href="#what-are-trajectories" aria-hidden="true"><span class="octicon octicon-link"></span></a>What are trajectories?</h2>
+
+<p>Trajectories are everywhere - pedestrians, vehicles, hurricanes, animals, and many other objects produce trajectories of position information that change over time. Trajectory mining seeks to identify patterns and interesting features in trajectory datasets. Trajectory mining techniques can be used to categorize paths of hurricanes, identify suspicious individuals in a park, or predict the destination of a car in a city.</p>
+
+<h2>
+<a id="background-and-motivations" class="anchor" href="#background-and-motivations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background and motivations</h2>
 
 <p>This is a library for trajectory outlier detection that uses the algorithm presented by 
-Jae-Gil Lee and others in their paper <a href="http://dm.kaist.ac.kr/jaegil/papers/icde08.pdf" title="Trajectory Outlier Detection Paper">Trajectory Outlier Detection: A Partition-and-Detect Framework</a> [1].</p>
+Jae-Gil Lee and others in their paper <a href="http://dm.kaist.ac.kr/jaegil/papers/icde08.pdf" title="Trajectory Outlier Detection Paper">Trajectory Outlier Detection: A Partition-and-Detect Framework</a> [1]. Outlier trajectories have paths that are not similar to other trajectories in the dataset.</p>
 
-<p>This code is based heavily on the source code made available on Jae-Gil Lee's <a href="http://dm.kaist.ac.kr/jaegil/" title="Source Code">webpage</a>. The code on
-on his website is a complete implementation of their algorithm, but like any good research prototype
-includes little documentation. Additionally, it was written with Microsoft Visual Studio - 
-it uses Windows-specific visualization and proprietary Microsoft C++ structures. 
-Therefore, the goal of this project was to take that implementation and rewrite it to be a cross-platform library.</p>
-
-<p><img src="example.png" alt="Alt Image"></p>
-
-<p>See API documentation <a href="./html/index.html">here</a>.</p>
+<p>This code is based heavily on the source code made available on Jae-Gil Lee's <a href="http://dm.kaist.ac.kr/jaegil/" title="Source Code">webpage</a>. The code on on his website is a complete implementation of their algorithm, but like most research prototypes it includes little documentation and is unusable as a general-purpose library. Additionally, it was written with Microsoft Visual Studio - it uses Windows-specific visualization and proprietary Microsoft C++ structures. <em>Therefore, the goal of this project was to take that implementation and rewrite it as a cross-platform library</em>. </p>
 
 <p><sub>[1] Jae-Gil Lee, Jiawei Han, and Xiaolei Li. 2008. Trajectory Outlier Detection: 
 A Partition-and-Detect Framework. In Proceedings of the 2008 IEEE 24th International 
 Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC, USA, 140-149.</sub></p>
+
+<h2>
+<a id="trajectory-plotting" class="anchor" href="#trajectory-plotting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trajectory Plotting</h2>
+
+<p>This graphic of the trajectories in a hurricane dataset is an example of the plotting functionality of the library. Plots are generated with Gnuplot, a generic cross-platform plotting library.</p>
+
+<p><img src="example2.png" alt="Plotting Trajectories"></p>
+
+<h2>
+<a id="outlier-plotting" class="anchor" href="#outlier-plotting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Outlier Plotting</h2>
+
+<p>After finding outliers in the hurricane dataset we can plot outlier trajectories (red) and outlying parititions (thick).</p>
+
+<p><img src="example.png" alt="Outlier Plotting"></p>
+
+<h2>
+<a id="basic-algorithm-overview" class="anchor" href="#basic-algorithm-overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic Algorithm Overview</h2>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>The code was written to be portable across all major platforms. The code was written in C++11 and must be compiled with a C++11 compatible compiler such as <a href="https://gcc.gnu.org/">gcc</a>. Plotting functionality is provided by the cross-platform <a href="http://gnuplot.info/">gnuplot</a> library.</p>
+
+<p>The code was tested in Linux and compiled with gcc 4.8.2.</p>
+
+<h2>
+<a id="trajectory-file-format" class="anchor" href="#trajectory-file-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trajectory File Format</h2>
+
+<h2>
+<a id="interface" class="anchor" href="#interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>Interface</h2>
+
+<p>The main outward-facing classes are <em>TrajData</em> and <em>COutlierDetector</em>, which handle the dataset and the outlier detection respectively.</p>
+
+<p>The following code block illustrates how to read in data, partition trajectories and find outliers, and output a plot of the trajectory outliers.</p>
+
+<pre><code>// TrajData reads in data and holds trajectory information
+TrajData data;
+data.readFile("./hurricane2000_2006.tra");
+
+// COutlierDetector will find outliers in the provided dataset
+COutlierDetector outlierDetector(&amp;data);
+outlierDetector.PartitionTrajectory();
+outlierDetector.DetectOutlier();
+
+// Output plot of trajectories and outliers
+data.OutputTrajectoryPlot("./outlierPlot.eps");
+</code></pre>
+
+<h2>
+<a id="full-documentation" class="anchor" href="#full-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Full Documentation</h2>
+
+<p>The full API and source documentation can be found <a href="./html/index.html">here</a>.</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/hansenrl">hansenrl</a></p>
