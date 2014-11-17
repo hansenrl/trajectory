@@ -97,13 +97,6 @@ A Partition-and-Detect Framework. In Proceedings of the 2008 IEEE 24th Internati
 Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC, USA, 140-149.</sub></p>
 
 <h2>
-<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
-
-<p>The code was written to be portable across all major platforms. The code was written in C++11 and must be compiled with a C++11 compatible compiler such as <a href="https://gcc.gnu.org/">gcc</a>. Plotting functionality is provided by the cross-platform <a href="http://gnuplot.info/">gnuplot</a> library, which is <em>not</em> included in this package. To interface to gnuplot the <a href="http://www.stahlke.org/dan/gnuplot-iostream/">gnuplot-iostream</a> library is required, which is included.</p>
-
-<p>The code was tested in Linux and gcc 4.8.2.</p>
-
-<h2>
 <a id="trajectory-file-format" class="anchor" href="#trajectory-file-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trajectory File Format</h2>
 
 <p>Trajectory data must be in a specific file format to be read properly. The characteristics of the format are:</p>
@@ -152,6 +145,13 @@ data.OutputTrajectoryPlot("./outlierPlot.eps");
 <a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h2>
 
 <p>Sample code to use the library is provided in main.cpp. Compile main.cpp with the detection library with the provided makefile by running "make". The produced <em>main</em> executable will read in the included sample data file hurricane2000_2006.tra and output the plot of outlier hurricane paths in the eps file sampleOutput.eps.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>The code was written to be portable across all major platforms. The code was written in C++11 and must be compiled with a C++11 compatible compiler such as <a href="https://gcc.gnu.org/">gcc</a>. Plotting functionality is provided by the cross-platform <a href="http://gnuplot.info/">gnuplot</a> library, which is <em>not</em> included in this package. To interface to gnuplot the <a href="http://www.stahlke.org/dan/gnuplot-iostream/">gnuplot-iostream</a> library is required, which is included.</p>
+
+<p>The code was tested in Linux and gcc 4.8.2.</p>
 
 <h2>
 <a id="full-documentation" class="anchor" href="#full-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Full Documentation</h2>
