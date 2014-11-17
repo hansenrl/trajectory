@@ -1,6 +1,9 @@
+*~
 *.o
 main
 convertData
 latex/
 .cproject
 .project
+sampleOut.eps
+sampleOut.png

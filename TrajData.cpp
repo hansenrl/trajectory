@@ -20,7 +20,7 @@
 #include "gnuplot-iostream.h"
 
 /**
- * \brief Default constructor.
+ * \brief Default constructor. Uses the fraction parameter p and the distance parameter D specified in params.h
  */
 TrajData::TrajData(){
 	m_nTrajectories = 0;
@@ -41,46 +41,85 @@ TrajData::~TrajData(){
  * \brief Output an eps image of the trajectories and outliers.
  *
  * Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions.
- * The output file is specified with filePath, which should be an eps file.
+ * Uses default coloring and line widths: outlier trajectories colored red, line widths 2,
+ * and outlier partitions in a line width of 6.
  *
- * @param filePath [in] The desired path of the .eps file to output
+ * The output file is specified with filePath, which should be an .eps file.
+ *
+ * @param filePath [in] The desired path and filename of the eps file to output
  */
 void TrajData::OutputTrajectoryPlot(string filePath){
+	OutputTrajectoryPlot(filePath, "post eps color", "red", 2, "red", 6);
+}
+
+/**
+ * \brief Output a png image of the trajectories and outliers.
+ *
+ * Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions.
+ * Uses default coloring and line widths: outlier trajectories colored red, line widths 2,
+ * and outlier partitions in a line width of 6.
+ *
+ * The output file is specified with filePath, which should be an .png file.
+ *
+ * @param filePath [in] The desired path and filename of the png file to output
+ */
+void TrajData::OutputTrajectoryPlotPNG(string filePath){
+	OutputTrajectoryPlot(filePath, "pngcairo enhanced", "red", 2, "red", 6);
+}
+
+/**
+ * \brief Output an eps image of the trajectories and outliers.
+ *
+ * Makes a plot of the trajectories with gnuplot and highlights outlying trajectories and partitions.
+ * The output file is specified with filePath, which should be an eps file.
+ *
+ * @param filePath [in] The desired path and filename of the eps file to output
+ * @param termSettings [in] the terminal settings passed to gnuplot to specify the output type and style. For example, for eps files specify "post eps", for png output specify "pngcairo", etc. Options can be specified afterward, such as "post eps color".
+ * @param oTrajColor [in] The color for outlying trajectories
+ * @param oTrajWidth [in] The line width for outlying trajectories
+ * @param oPartColor [in] The color for outlying partitions
+ * @param oPartWidth [in] The line width for outlying partitions
+ */
+void TrajData::OutputTrajectoryPlot(string filePath, string termSettings, string oTrajColor, int oTrajWidth, string oPartColor, int oPartWidth){
 	set<int> outlier_trajectories;
 	for (COutlier* outlier_p : m_outlierList)
 	{
 		outlier_trajectories.insert((*outlier_p).GetTrajectoryId());
 	}
 
+	// Setup terminal
 	Gnuplot gp;
-	gp << "set term post eps color\n";
+	gp << "set term " << termSettings << "\n";
 	gp << "set output '" << filePath << "'\n";
 	gp << "unset key\n";
 
-	// Normal trajectory in black, outlying trajectory in red, outlying partitions in green
+	// Draw normal trajectories and outlier trajectories
 	if(outlier_trajectories.find(m_trajectoryList[0]->GetId()) == outlier_trajectories.end())
 	{
-		gp << "plot '-' using 1:2 with lines title '0' linetype -1";
+		gp << "plot '-' using 1:2 with lines title '0' linetype -1 lw 1" ;
 	} else {
-		gp << "plot '-' using 1:2 with lines title '0' linetype 1 lw 2";
+		gp << ", '' using 1:2 with lines title '0' linetype 1 lc rgb '" << oTrajColor << "' lw " << oTrajWidth;
 	}
 	for(int i = 1; i < m_trajectoryList.size(); i++){
 		if(outlier_trajectories.find(m_trajectoryList[i]->GetId()) == outlier_trajectories.end())
 		{
-			gp << ", '' using 1:2 with lines title '0' linetype -1";
+			gp << ", '' using 1:2 with lines title '0' linetype -1 lw 1";
 		} else {
-			gp << ", '' using 1:2 with lines title '0' linetype 1 lw 2";
+			gp << ", '' using 1:2 with lines title '0' linetype 1 lc rgb '" << oTrajColor << "' lw " << oTrajWidth;
 		}
 	}
+
+	// Find number of outlying partitions and setup plotting for them
 	int totalOutlyingPartitions = 0;
 	for( COutlier* outlier : m_outlierList){
 		totalOutlyingPartitions += outlier->GetNOutlyingPartitions();
 	}
 	for(int i = 0; i < totalOutlyingPartitions; i++){
-		gp << ", '' using 1:2 with lines title '0' linetype 1 lc rgb 'red' lw 6";
+		gp << ", '' using 1:2 with lines title '0' linetype 1 lc rgb '" << oPartColor << "' lw " << oPartWidth;
 	}
 	gp << "\n";
 
+	// Draw outlying partitions
 	for( CTrajectory* traj_p : m_trajectoryList){
 		vector<tuple<float, float> > pts;
 		CTrajectory traj = *traj_p;
@@ -103,9 +142,6 @@ void TrajData::OutputTrajectoryPlot(string filePath){
 			if(i == 2) {
 				//break;
 			}
-		}
-		if(i == 2) {
-			//break;
 		}
 	}
 }
@@ -180,7 +216,7 @@ bool TrajData::readFile(string filePath)
 			pTrajectoryItem->AddPointToArray(point);
 		}
 	}
-	cout << "Size of list: " << m_trajectoryList.size() << "\n";
+
 	istr.close();
 
 	return true;

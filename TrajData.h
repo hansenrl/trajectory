@@ -39,6 +39,8 @@ public:
 
 	bool readFile(string);
 	void OutputTrajectoryPlot(string);
+	void OutputTrajectoryPlotPNG(string filePath);
+	void OutputTrajectoryPlot(string filePath, string termSettings, string oTrajColor, int oTrajWidth, string oPartColor, int oPartWidth);
 
 private:
 	int m_maxNPoints; ///< The maximum number of points to read in
