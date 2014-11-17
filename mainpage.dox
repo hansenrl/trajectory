@@ -14,7 +14,7 @@ includes little documentation. Additionally, it was written with Microsoft Visua
 it uses Windows-specific visualization and proprietary Microsoft C++ structures. 
 Therefore, the goal of this project was to take that implementation and rewrite it to be a cross-platform library.
 
-![Alt Image](../example.png)
+![Alt Image](../images/example.png)
 
 [1]: http://dm.kaist.ac.kr/jaegil/papers/icde08.pdf "Trajectory Outlier Detection Paper"
 [2]: http://dm.kaist.ac.kr/jaegil/ "Source Code"
