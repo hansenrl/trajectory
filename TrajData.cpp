@@ -180,7 +180,7 @@ bool TrajData::readFile(string filePath)
 			pTrajectoryItem->AddPointToArray(point);
 		}
 	}
-	cout << "Size of list: " << m_trajectoryList.size() << "\n";
+
 	istr.close();
 
 	return true;

@@ -7,18 +7,19 @@
 using namespace std;
 
 int main () {
+	// TrajData reads in data and holds trajectory information
 	TrajData data;
-	//data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane1950_2006.tra");
-	data.readFile("/home/ross/traod_expr/real_data/Hurricane/hurricane2000_2006.tra");
-	//data.readFile("/home/ross/afrl_data.tra");
+	data.readFile("hurricane2000_2006.tra");
 
+	// COutlierDetector will find outliers in the provided dataset
 	COutlierDetector outlierDetector(&data);
-	// set fraction distance?
 	outlierDetector.PartitionTrajectory();
 	outlierDetector.DetectOutlier();
-	cout << "Size of outlierList: " << data.m_outlierList.size() << "\n";
-	cout << "Finished!\n";
-	data.OutputTrajectoryPlot("/home/ross/test.eps");
+	cout << "Size of trajectory outlierList: " << data.m_outlierList.size() << "\n";
+	cout << "Finished partitioning and finding outliers!\n";
+
+	// Output plot of trajectories and outliers
+	data.OutputTrajectoryPlot("sampleOut.eps");
 
     return 0;
 }
