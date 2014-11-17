@@ -86,12 +86,13 @@ void TrajData::OutputTrajectoryPlot(string filePath, string termSettings, string
 		outlier_trajectories.insert((*outlier_p).GetTrajectoryId());
 	}
 
+	// Setup terminal
 	Gnuplot gp;
 	gp << "set term " << termSettings << "\n";
 	gp << "set output '" << filePath << "'\n";
 	gp << "unset key\n";
 
-	// Normal trajectory in black, outlying trajectory in red, outlying partitions in green
+	// Draw normal trajectories and outlier trajectories
 	if(outlier_trajectories.find(m_trajectoryList[0]->GetId()) == outlier_trajectories.end())
 	{
 		gp << "plot '-' using 1:2 with lines title '0' linetype -1 lw 1" ;
@@ -106,6 +107,8 @@ void TrajData::OutputTrajectoryPlot(string filePath, string termSettings, string
 			gp << ", '' using 1:2 with lines title '0' linetype 1 lc rgb '" << oTrajColor << "' lw " << oTrajWidth;
 		}
 	}
+
+	// Find number of outlying partitions and setup plotting for them
 	int totalOutlyingPartitions = 0;
 	for( COutlier* outlier : m_outlierList){
 		totalOutlyingPartitions += outlier->GetNOutlyingPartitions();
@@ -115,6 +118,7 @@ void TrajData::OutputTrajectoryPlot(string filePath, string termSettings, string
 	}
 	gp << "\n";
 
+	// Draw outlying partitions
 	for( CTrajectory* traj_p : m_trajectoryList){
 		vector<tuple<float, float> > pts;
 		CTrajectory traj = *traj_p;
@@ -137,9 +141,6 @@ void TrajData::OutputTrajectoryPlot(string filePath, string termSettings, string
 			if(i == 2) {
 				//break;
 			}
-		}
-		if(i == 2) {
-			//break;
 		}
 	}
 }
