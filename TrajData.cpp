@@ -20,7 +20,7 @@
 #include "gnuplot-iostream.h"
 
 /**
- * \brief Default constructor.
+ * \brief Default constructor. Uses the fraction parameter p and the distance parameter D specified in params.h
  */
 TrajData::TrajData(){
 	m_nTrajectories = 0;
