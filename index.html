@@ -78,6 +78,8 @@ Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC
 <h2>
 <a id="basic-algorithm-overview" class="anchor" href="#basic-algorithm-overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic Algorithm Overview</h2>
 
+<p>The library is based on the trajectory outlier detection algorithm presented in [1].</p>
+
 <p>The key goal behind the algorithm is to not just identify outlying trajectories, but outlying <em>sub</em>-trajectories. With long and complicated trajectories much of an anomalous trajectory may still be similar to other trajectories - so we want to a way to identify the outlying <em>part</em> of a trajectory, or sub-trajectory.</p>
 
 <p><img src="images/outlyingSubtrajectorySmall.png" alt="Outlying Subtrajectories">
@@ -87,6 +89,10 @@ Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC
 
 <p><img src="images/partitionAndDetectSmall.png" alt="Partition-and-Detect">
 <sub>Graphic from [1]</sub></p>
+
+<p><sub>[1] Jae-Gil Lee, Jiawei Han, and Xiaolei Li. 2008. Trajectory Outlier Detection: 
+A Partition-and-Detect Framework. In Proceedings of the 2008 IEEE 24th International 
+Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC, USA, 140-149.</sub></p>
 
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
