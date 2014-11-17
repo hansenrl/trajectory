@@ -71,16 +71,22 @@ Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC
 <h2>
 <a id="outlier-plotting" class="anchor" href="#outlier-plotting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Outlier Plotting</h2>
 
-<p>After finding outliers in the hurricane dataset we can plot outlier trajectories (red) and outlying parititions (thick).</p>
+<p>After finding outliers in the hurricane dataset we can plot outlier trajectories (red) and outlying partitions (thick red).</p>
 
 <p><img src="images/example.png" alt="Outlier Plotting"></p>
 
 <h2>
 <a id="basic-algorithm-overview" class="anchor" href="#basic-algorithm-overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic Algorithm Overview</h2>
 
-<p><img src="images/outlyingSubtrajectorySmall.png" alt="Outlying Subtrajectories"></p>
+<p>The key goal behind the algorithm is to not just identify outlying trajectories, but outlying <em>sub</em>-trajectories. With long and complicated trajectories much of an anomalous trajectory may still be similar to other trajectories - so we want to a way to identify the outlying <em>part</em> of a trajectory, or sub-trajectory.</p>
 
-<p><img src="images/partitionAndDetectSmall.png" alt="Partition-and-Detect"></p>
+<p><img src="images/outlyingSubtrajectorySmall.png" alt="Outlying Subtrajectories">
+<sub>Graphic from [1]</sub></p>
+
+<p>To do this, the algorithm employs a <em>Partition-and-Detect</em> framework. Trajectories are first divided into partitions that efficiently describe the movement of the trajectory in a concise set of linear line segments called. The partitions are are then compared spatially to find outlying segments. An overall trajectory is deemed to be outlying if a significant portion of its path is composed of outlying segments.</p>
+
+<p><img src="images/partitionAndDetectSmall.png" alt="Partition-and-Detect">
+<sub>Graphic from [1]</sub></p>
 
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
@@ -91,6 +97,28 @@ Conference on Data Engineering (ICDE '08). IEEE Computer Society, Washington, DC
 
 <h2>
 <a id="trajectory-file-format" class="anchor" href="#trajectory-file-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trajectory File Format</h2>
+
+<p>Trajectory data must be represented in a specific file format to be read properly. The characteristics of the file are:</p>
+
+<ul>
+<li>Line 1 contains an integer representing the number of dimensions in the dataset</li>
+<li>Line 2 contains an integer representing the number of trajectories in the dataset</li>
+<li>Lines 3 through the end of the file contain the trajectories, one per line
+
+<ul>
+<li>Each trajectory line contains numbers separated by spaces. The first field is the numeric trajectory ID, the second field is the number of data points contained in the trajectory path, and the rest of the line contains the positions of each data point in the format x1 y1 x2 y2 x3 y3 x4 y4 ... (for a 2-D dataset).</li>
+</ul>
+</li>
+</ul>
+
+<p>An example file, containing 3 two-dimensional trajectories:</p>
+
+<pre><code>2
+3
+0 3 0.0 0.0 1.0 1.0 2.0 2.0
+1 5 -2.0 0.0 -2.0 1.0 -2.0 2.0 -2.0 3.0 -1.0 3.5
+2 5 2.2 3.1 2.5 3.0 2.4 2.5 2.2 2.1 1.5 1.5
+</code></pre>
 
 <h2>
 <a id="interface" class="anchor" href="#interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>Interface</h2>
