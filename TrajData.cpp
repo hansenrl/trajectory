@@ -74,6 +74,7 @@ void TrajData::OutputTrajectoryPlotPNG(string filePath){
  * The output file is specified with filePath, which should be an eps file.
  *
  * @param filePath [in] The desired path and filename of the eps file to output
+ * @param termSettings [in] the terminal settings passed to gnuplot to specify the output type and style. For example, for eps files specify "post eps", for png output specify "pngcairo", etc. Options can be specified afterward, such as "post eps color".
  * @param oTrajColor [in] The color for outlying trajectories
  * @param oTrajWidth [in] The line width for outlying trajectories
  * @param oPartColor [in] The color for outlying partitions
