@@ -44,6 +44,8 @@
 
 <p>This is an open-source library to find outlier trajectories in a dataset. This library is based on the work of <a href="http://dm.kaist.ac.kr/jaegil/">Jae-Gil Lee</a> and others.</p>
 
+<p>If you want to get straight to the code, skip to (Getting Started)[##getting-started].</p>
+
 <h2>
 <a id="what-are-trajectories" class="anchor" href="#what-are-trajectories" aria-hidden="true"><span class="octicon octicon-link"></span></a>What Are Trajectories?</h2>
 
@@ -145,6 +147,11 @@ outlierDetector.DetectOutlier();
 // Output plot of trajectories and outliers
 data.OutputTrajectoryPlot("./outlierPlot.eps");
 </code></pre>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<p>Sample code to use the library is provided in main.cpp. Compile main.cpp with the detection library with the provided makefile by running "make". The produced <em>main</em> executable will read in the included sample data file "hurricane2000_2006.tra" and output the plot of outlier hurricane paths in the eps file "sampleOutput.eps".</p>
 
 <h2>
 <a id="full-documentation" class="anchor" href="#full-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Full Documentation</h2>
